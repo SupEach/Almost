@@ -222,7 +222,7 @@ export default function Home() {
               key={category.type}
               className={hoveredFeaturedCategory === category.type || (!hoveredFeaturedCategory && filter === category.type) ? "active" : ""}
               onClick={() => setFilter(current => current === category.type ? "全部" : category.type)}
-            >{category.label}</button>
+            >{category.label.toUpperCase()}</button>
           ))}
         </div>
         <div className="work-grid shell">
