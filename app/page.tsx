@@ -4,7 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import SimplexNoise from "simplex-noise";
 
-const categories = ["全部", "品牌及徽标", "活动和展览", "海报和图形", "书籍和音乐装帧", "包装和产品", "UI和界面"];
+const categories = [
+  { label: "Branding & Logos", type: "品牌及徽标" },
+  { label: "Events & Exhibitions", type: "活动和展览" },
+  { label: "Posters & Graphics", type: "海报和图形" },
+  { label: "Editorial & Music", type: "书籍和音乐装帧" },
+  { label: "Packaging & Products", type: "包装和产品" },
+  { label: "Commercial & Web", type: "商业和网站" },
+];
 
 const projects = [
   { no: "01", title: "放假公园", en: "HOLIDAY PARK", type: "品牌及徽标", year: "2023", art: "park" },
@@ -12,28 +19,28 @@ const projects = [
   { no: "03", title: "李健 · 门", en: "THE DOOR", type: "书籍和音乐装帧", year: "2021", art: "door" },
   { no: "04", title: "猎毒人", en: "THE DRUG HUNTER", type: "海报和图形", year: "2018", art: "poster" },
   { no: "05", title: "国岚茶", en: "GUOLAN TEA", type: "包装和产品", year: "2023", art: "tea" },
-  { no: "06", title: "野小兽", en: "YESOUL", type: "UI和界面", year: "2022", art: "ui" },
+  { no: "06", title: "野小兽", en: "YESOUL", type: "商业和网站", year: "2022", art: "ui" },
 ];
 
 const featuredProjects = [
-  { no: "01", title: "放假公园", en: "HOLIDAY PARK", art: "park" },
-  { no: "02", title: "漂浮公园", en: "FLOATING PARK", art: "sea" },
-  { no: "03", title: "连马讨海音乐节", en: "SEA CALLS", art: "poster" },
-  { no: "04", title: "为爱麦跑", en: "RUN FOR LOVE", art: "ui" },
-  { no: "05", title: "李健 · 门", en: "THE DOOR", art: "door" },
-  { no: "06", title: "美若黎明", en: "DAWN", art: "tea" },
-  { no: "07", title: "罗小黑战记", en: "THE LEGEND OF HEI", art: "park" },
-  { no: "08", title: "猎毒人", en: "THE DRUG HUNTER", art: "poster" },
-  { no: "09", title: "中国式关系", en: "CHINESE STYLE", art: "door" },
-  { no: "10", title: "国岚茶", en: "GUOLAN TEA", art: "tea" },
-  { no: "11", title: "春夏秋冬", en: "FOUR SEASONS", art: "sea" },
-  { no: "12", title: "野小兽", en: "YESOUL", art: "ui" },
-  { no: "13", title: "MAKERLIVE", en: "MAKER LIVE", art: "poster" },
-  { no: "14", title: "康姆士", en: "COM'Z", art: "park" },
-  { no: "15", title: "周末实验室", en: "WEEKEND LAB", art: "ui" },
-  { no: "16", title: "次声波", en: "INFRASOUND", art: "sea" },
-  { no: "17", title: "苏姗酵室", en: "SUSAN FERMENTS", art: "tea" },
-  { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door" },
+  { no: "01", title: "放假公园", en: "HOLIDAY PARK", art: "park", type: "品牌及徽标" },
+  { no: "02", title: "漂浮公园", en: "FLOATING PARK", art: "sea", type: "品牌及徽标" },
+  { no: "03", title: "MAKERLIVE", en: "MAKER LIVE", art: "poster", type: "品牌及徽标" },
+  { no: "04", title: "连马讨海音乐节", en: "SEA CALLS", art: "poster", type: "活动和展览" },
+  { no: "05", title: "为爱麦跑", en: "RUN FOR LOVE", art: "ui", type: "活动和展览" },
+  { no: "06", title: "周末实验室", en: "WEEKEND LAB", art: "ui", type: "活动和展览" },
+  { no: "07", title: "猎毒人", en: "THE DRUG HUNTER", art: "poster", type: "海报和图形" },
+  { no: "08", title: "中国式关系", en: "CHINESE STYLE", art: "door", type: "海报和图形" },
+  { no: "09", title: "次声波", en: "INFRASOUND", art: "sea", type: "海报和图形" },
+  { no: "10", title: "李健 · 门", en: "THE DOOR", art: "door", type: "书籍和音乐装帧" },
+  { no: "11", title: "美若黎明", en: "DAWN", art: "tea", type: "书籍和音乐装帧" },
+  { no: "12", title: "罗小黑战记", en: "THE LEGEND OF HEI", art: "park", type: "书籍和音乐装帧" },
+  { no: "13", title: "国岚茶", en: "GUOLAN TEA", art: "tea", type: "包装和产品" },
+  { no: "14", title: "春夏秋冬", en: "FOUR SEASONS", art: "sea", type: "包装和产品" },
+  { no: "15", title: "苏姗酵室", en: "SUSAN FERMENTS", art: "tea", type: "包装和产品" },
+  { no: "16", title: "野小兽", en: "YESOUL", art: "ui", type: "商业和网站" },
+  { no: "17", title: "康姆士", en: "COM'Z", art: "park", type: "商业和网站" },
+  { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door", type: "商业和网站" },
 ];
 
 const capabilities = [
@@ -125,6 +132,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
   const [mountainButtonActive, setMountainButtonActive] = useState(false);
+  const [hoveredFeaturedCategory, setHoveredFeaturedCategory] = useState<string | null>(null);
   const mountainButtonTimer = useRef<number | null>(null);
   const visible = filter === "全部" ? projects : projects.filter(p => p.type === filter);
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
@@ -191,7 +199,12 @@ export default function Home() {
             {[0, 1].map(group => (
               <div className="featured-set" key={group} aria-hidden={group === 1}>
                 {featuredProjects.map(project => (
-                  <article className="featured-card" key={`${group}-${project.no}`}>
+                  <article
+                    className="featured-card"
+                    key={`${group}-${project.no}`}
+                    onMouseEnter={() => setHoveredFeaturedCategory(project.type)}
+                    onMouseLeave={() => setHoveredFeaturedCategory(null)}
+                  >
                     <div className={`featured-visual art-${project.art}`}>
                       <span>{project.no}</span>
                       <strong>{project.en}</strong>
@@ -204,7 +217,13 @@ export default function Home() {
         </div>
 
         <div className="filters shell" role="group" aria-label="作品分类筛选">
-          {categories.map(c => <button key={c} className={filter === c ? "active" : ""} onClick={() => setFilter(c)}>{c}</button>)}
+          {categories.map(category => (
+            <button
+              key={category.type}
+              className={hoveredFeaturedCategory === category.type || (!hoveredFeaturedCategory && filter === category.type) ? "active" : ""}
+              onClick={() => setFilter(current => current === category.type ? "全部" : category.type)}
+            >{category.label}</button>
+          ))}
         </div>
         <div className="work-grid shell">
           {visible.map((p, i) => (
