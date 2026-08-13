@@ -5,12 +5,12 @@ import * as THREE from "three";
 import SimplexNoise from "simplex-noise";
 
 const categories = [
-  { label: "Branding & Logos", type: "品牌及徽标" },
-  { label: "Events & Exhibitions", type: "活动和展览" },
-  { label: "Posters & Graphics", type: "海报和图形" },
-  { label: "Editorial & Music", type: "书籍和音乐装帧" },
-  { label: "Packaging & Products", type: "包装和产品" },
-  { label: "Commercial & Web", type: "商业和网站" },
+  { label: "Branding & Logos", type: "品牌及徽标", slug: "branding-logos", art: "identity", note: "IDENTITY / SYSTEM / SYMBOL" },
+  { label: "Events & Exhibitions", type: "活动和展览", slug: "events-exhibitions", art: "events", note: "SPACE / CULTURE / EXPERIENCE" },
+  { label: "Posters & Graphics", type: "海报和图形", slug: "posters-graphics", art: "posters", note: "IMAGE / TYPE / MESSAGE" },
+  { label: "Editorial & Music", type: "书籍和音乐装帧", slug: "editorial-music", art: "editorial", note: "BOOK / ALBUM / NARRATIVE" },
+  { label: "Packaging & Products", type: "包装和产品", slug: "packaging-products", art: "packaging", note: "OBJECT / MATERIAL / SHELF" },
+  { label: "Commercial & Web", type: "商业和网站", slug: "commercial-web", art: "digital", note: "CAMPAIGN / SCREEN / WEB" },
 ];
 
 const projects = [
@@ -128,13 +128,12 @@ function GenerativeCanvas({ variation }: { variation: number }) {
 function Arrow() { return <span aria-hidden="true">↗</span>; }
 
 export default function Home() {
-  const [filter, setFilter] = useState("全部");
   const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
   const [mountainButtonActive, setMountainButtonActive] = useState(false);
   const [hoveredFeaturedCategory, setHoveredFeaturedCategory] = useState<string | null>(null);
+  const [hoveredFilterCategory, setHoveredFilterCategory] = useState<string | null>(null);
   const mountainButtonTimer = useRef<number | null>(null);
-  const visible = filter === "全部" ? projects : projects.filter(p => p.type === filter);
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
 
   const showNextMountain = () => {
@@ -216,35 +215,42 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="filters shell" role="group" aria-label="作品分类筛选">
+        <nav className="filters shell" aria-label="作品分类入口">
           {categories.map(category => {
             const isActive = hoveredFeaturedCategory === category.type
-              || (!hoveredFeaturedCategory && filter === category.type);
+              || hoveredFilterCategory === category.type;
 
             return (
-              <button
+              <a
                 key={category.type}
                 className={isActive ? "active" : ""}
-                onClick={() => setFilter(current => current === category.type ? "全部" : category.type)}
-              >{isActive ? category.type : category.label.toUpperCase()}</button>
+                href={`/works/${category.slug}`}
+                onMouseEnter={() => setHoveredFilterCategory(category.type)}
+                onMouseLeave={() => setHoveredFilterCategory(null)}
+                onFocus={() => setHoveredFilterCategory(category.type)}
+                onBlur={() => setHoveredFilterCategory(null)}
+              >{isActive ? category.type : category.label.toUpperCase()}</a>
             );
           })}
-        </div>
-        <div className="work-grid shell">
-          {visible.map((p, i) => (
-            <article className={`project ${i % 3 === 0 ? "wide" : ""}`} key={p.title}>
-              <div className={`project-art art-${p.art}`}>
-                <span className="art-no">{p.no}</span>
-                <div className="art-type">{p.en}</div>
-                <span className="view">查看项目 <Arrow /></span>
+        </nav>
+
+        <nav className="category-grid shell" aria-label="六大作品分类">
+          {categories.map((category, index) => (
+            <a
+              className={`category-panel category-art-${category.art}`}
+              href={`/works/${category.slug}`}
+              key={category.slug}
+            >
+              <span className="category-number">0{index + 1}</span>
+              <span className="category-note">{category.note}</span>
+              <div className="category-copy">
+                <p>{category.type}</p>
+                <h3>{category.label}</h3>
               </div>
-              <div className="project-meta">
-                <div><h3>{p.title}</h3><p>{p.en}</p></div>
-                <div><span>{p.type}</span><span>{p.year}</span></div>
-              </div>
-            </article>
+              <span className="category-enter">VIEW CATEGORY <Arrow /></span>
+            </a>
           ))}
-        </div>
+        </nav>
       </section>
 
       <section className="about" id="about">
