@@ -15,6 +15,27 @@ const projects = [
   { no: "06", title: "野小兽", en: "YESOUL", type: "UI和界面", year: "2022", art: "ui" },
 ];
 
+const featuredProjects = [
+  { no: "01", title: "放假公园", en: "HOLIDAY PARK", art: "park" },
+  { no: "02", title: "漂浮公园", en: "FLOATING PARK", art: "sea" },
+  { no: "03", title: "连马讨海音乐节", en: "SEA CALLS", art: "poster" },
+  { no: "04", title: "为爱麦跑", en: "RUN FOR LOVE", art: "ui" },
+  { no: "05", title: "李健 · 门", en: "THE DOOR", art: "door" },
+  { no: "06", title: "美若黎明", en: "DAWN", art: "tea" },
+  { no: "07", title: "罗小黑战记", en: "THE LEGEND OF HEI", art: "park" },
+  { no: "08", title: "猎毒人", en: "THE DRUG HUNTER", art: "poster" },
+  { no: "09", title: "中国式关系", en: "CHINESE STYLE", art: "door" },
+  { no: "10", title: "国岚茶", en: "GUOLAN TEA", art: "tea" },
+  { no: "11", title: "春夏秋冬", en: "FOUR SEASONS", art: "sea" },
+  { no: "12", title: "野小兽", en: "YESOUL", art: "ui" },
+  { no: "13", title: "MAKERLIVE", en: "MAKER LIVE", art: "poster" },
+  { no: "14", title: "康姆士", en: "COM'Z", art: "park" },
+  { no: "15", title: "周末实验室", en: "WEEKEND LAB", art: "ui" },
+  { no: "16", title: "次声波", en: "INFRASOUND", art: "sea" },
+  { no: "17", title: "苏姗酵室", en: "SUSAN FERMENTS", art: "tea" },
+  { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door" },
+];
+
 const capabilities = [
   ["品牌策略与视觉系统", "95"], ["创意与美术指导", "93"], ["设计团队与项目管理", "90"],
   ["活动 / 展览落地", "88"], ["包装与出版设计", "86"], ["UI / AI 设计工作流", "82"],
@@ -160,15 +181,37 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="works shell" id="works">
-        <div className="section-intro">
-          <p className="index">01 — SELECTED WORKS</p>
-          <h2>精选作品<span> / 2013—2026</span></h2>
+      <section className="works" id="works">
+        <div className="section-intro works-heading shell">
+          <p className="index">01 — WORKS</p>
+          <h2>SELECTED WORKS</h2>
         </div>
-        <div className="filters" role="group" aria-label="作品分类筛选">
+
+        <div className="featured-projects" aria-label="主推项目">
+          <div className="featured-track">
+            {[0, 1].map(group => (
+              <div className="featured-set" key={group} aria-hidden={group === 1}>
+                {featuredProjects.map(project => (
+                  <article className="featured-card" key={`${group}-${project.no}`}>
+                    <div className={`featured-visual art-${project.art}`}>
+                      <span>{project.no}</span>
+                      <strong>{project.en}</strong>
+                    </div>
+                    <div className="featured-caption">
+                      <span>{project.title}</span>
+                      <span>{project.no} / 18</span>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="filters shell" role="group" aria-label="作品分类筛选">
           {categories.map(c => <button key={c} className={filter === c ? "active" : ""} onClick={() => setFilter(c)}>{c}</button>)}
         </div>
-        <div className="work-grid">
+        <div className="work-grid shell">
           {visible.map((p, i) => (
             <article className={`project ${i % 3 === 0 ? "wide" : ""}`} key={p.title}>
               <div className={`project-art art-${p.art}`}>
