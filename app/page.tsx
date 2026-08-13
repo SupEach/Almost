@@ -43,9 +43,12 @@ const featuredProjects = [
   { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door", type: "商业和网站" },
 ];
 
-const capabilities = [
-  ["品牌策略与视觉系统", "95"], ["创意与美术指导", "93"], ["设计团队与项目管理", "90"],
-  ["活动 / 展览落地", "88"], ["包装与出版设计", "86"], ["UI / AI 设计工作流", "82"],
+const capabilityPeaks = [
+  { label: "项目阅读", height: 52 },
+  { label: "趋势感知", height: 43 },
+  { label: "审美判断", height: 58 },
+  { label: "设计执行", height: 47 },
+  { label: "团队管理", height: 54 },
 ];
 
 const heroSlogans = [
@@ -261,34 +264,48 @@ export default function Home() {
 
       <section className="about" id="about">
         <div className="shell">
-          <div className="section-intro light">
-            <p className="index">02 — ABOUT</p>
-            <h2>设计不是装饰，<br />是建立<span>意义与秩序。</span></h2>
+          <header className="about-heading">
+            <p>ABOUT / 关于</p>
+            <h2>不完整，才是事情<br />开始变好的地方</h2>
+          </header>
+
+          <div className="experience-stats" aria-label="经验数字">
+            <div><span>DESIGN EXPERIENCE</span><strong>14<sup>年</sup></strong><p>设计经验</p></div>
+            <div><span>TEAM MANAGEMENT</span><strong>10<sup>年</sup></strong><p>团队管理</p></div>
+            <div><span>BRANDS SERVED</span><strong>50<sup>+</sup></strong><p>服务品牌</p></div>
+            <div><span>PROJECT DELIVERY</span><strong>300<sup>+</sup></strong><p>完整项目落地</p></div>
           </div>
+
           <div className="about-grid">
             <div className="portrait" role="img" aria-label="薛譞杰人物肖像占位图">
               <div className="portrait-mark">XJ</div>
               <div className="portrait-caption"><span>PORTRAIT / 2026</span><span>FUZHOU, CN</span></div>
             </div>
             <div className="bio">
-              <p className="lead">你好，我是薛譞杰。一名始终保持一线创作的视觉设计总监。</p>
+              <p className="bio-label">BIOGRAPHY / 个人介绍</p>
+              <p className="lead">关于我和不周山</p>
               <p>14 年设计经验、10 年以上项目与团队管理经验。我的工作横跨品牌、文化、商业与数字产品：从策略定义、创意提案，到供应商协同与最终落地，提供完整而稳定的视觉解决方案。</p>
-              <div className="stats">
-                <div><strong>14<sup>+</sup></strong><span>年设计经验</span></div>
-                <div><strong>10<sup>+</sup></strong><span>年团队管理</span></div>
-                <div><strong>100<sup>+</sup></strong><span>完整项目交付</span></div>
+            </div>
+          </div>
+
+          <div className="capabilities">
+            <p className="sub-label">CAPABILITIES / 能力图谱</p>
+            <div className="mountain-chart" aria-label="项目阅读、趋势感知、审美判断、设计执行与团队管理能力山形图">
+              <i className="mountain-line" aria-hidden="true" />
+              <div className="mountain-points">
+                {capabilityPeaks.map((peak, index) => (
+                  <div className="mountain-point" key={peak.label} style={{"--height": `${peak.height}%`} as React.CSSProperties}>
+                    <b><span>0{index + 1}</span></b>
+                    <strong>{peak.label}</strong>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-          <div className="capabilities">
-            <p className="sub-label">CAPABILITIES / 能力图谱</p>
-            <div className="cap-list">
-              {capabilities.map(([name, value], i) => <div className="cap" key={name} style={{"--score": `${value}%`} as React.CSSProperties}><span>0{i+1}</span><strong>{name}</strong><i><b /></i><em>{value}</em></div>)}
-            </div>
-          </div>
+
           <div className="clients">
             <p className="sub-label">SELECTED COLLABORATIONS / 合作项目</p>
-            <div className="client-list"><span>李健</span><span>McDonald&apos;s</span><span>罗小黑战记</span><span>YESOUL</span><span>康姆士</span><span>福建省艺术馆</span><span>MAKERLIVE</span><span>王祖蓝工作室</span></div>
+            <div className="client-list"><span>李健</span><span>McDonald&apos;s</span><span>罗小黑战记</span><span>YESOUL</span><span>康姆士</span><span>福建省艺术馆</span><span>MAKERLIVE</span><span>王祖蓝工作室</span><span>GUOLAN</span><span>SEA CALLS</span></div>
           </div>
         </div>
       </section>
