@@ -253,7 +253,7 @@ export default function Home() {
                 <p>{category.type}</p>
                 <h3>{category.label}</h3>
               </div>
-              <span className="category-enter">VIEW CATEGORY <Arrow /></span>
+              <span className="category-enter">点击进入</span>
             </a>
           ))}
         </nav>
