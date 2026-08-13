@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import SimplexNoise from "simplex-noise";
 
 const categories = ["全部", "品牌及徽标", "活动和展览", "海报和图形", "书籍和音乐装帧", "包装和产品", "UI和界面"];
 
@@ -19,70 +21,71 @@ const capabilities = [
 ];
 
 function GenerativeCanvas({ variation }: { variation: number }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const pointer = useRef({ x: 0.5, y: 0.5 });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    let frame = 0;
+    const container = containerRef.current;
+    if (!container) return;
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0xffffff, 40, 160);
+    const camera = new THREE.PerspectiveCamera(75, 1, .1, 1000);
+    camera.position.set(0, 10, 75);
+    camera.lookAt(0, 15, 0);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setClearColor(0xffffff, 0);
+    container.appendChild(renderer.domElement);
+
+    const geometry = new THREE.PlaneGeometry(160, 160, 38, 38);
+    const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true });
+    const simplex = new SimplexNoise();
+    const seed = Math.random() * 100 + variation * 17.31;
+    const position = geometry.attributes.position as THREE.BufferAttribute;
+    const colors: number[] = [];
+    for (let i = 0; i < position.count; i++) {
+      let x = position.getX(i);
+      let y = position.getY(i);
+      x += simplex.noise2D(x * .03 + seed * .01, y * .03) * 4;
+      y += simplex.noise2D(y * .03 + 100, x * .03 + 100 + seed * .01) * 4;
+      position.setXY(i, x, y);
+      const dist = Math.sqrt(x * x + y * y);
+      let z = 50 * Math.exp(-(x * x + y * y) / 1200);
+      z += Math.abs(simplex.noise2D(x * .06 + seed, y * .06 + seed)) * 6;
+      if (dist > 55) z -= Math.pow(dist - 55, 2) * .06;
+      position.setZ(i, z);
+      const c = Math.max(0, Math.min(1, 1 - z / 20 - .01));
+      colors.push(c, c, c);
+    }
+    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geometry.computeVertexNormals();
+    const mountain = new THREE.Mesh(geometry, material);
+    mountain.rotation.x = -Math.PI / 2;
+    scene.add(mountain);
+
     let raf = 0;
     const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio, 2);
-      canvas.width = canvas.clientWidth * dpr;
-      canvas.height = canvas.clientHeight * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const { width, height } = container.getBoundingClientRect();
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
     };
-    const move = (e: PointerEvent) => {
-      pointer.current = { x: e.clientX / innerWidth, y: e.clientY / innerHeight };
+    const animate = () => {
+      mountain.rotation.z += .0005;
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(animate);
     };
-    const draw = () => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
-      ctx.clearRect(0, 0, w, h);
-      ctx.save();
-      const seeded = (offset: number) => {
-        const x = Math.sin((variation + 1) * 12.9898 + offset * 78.233) * 43758.5453;
-        return x - Math.floor(x);
-      };
-      const centerX = .43 + seeded(1) * .14;
-      const centerY = .43 + seeded(2) * .14;
-      const stretchX = 1.08 + seeded(3) * .42;
-      const stretchY = .72 + seeded(4) * .28;
-      const waveA = 2 + Math.floor(seeded(5) * 4);
-      const waveB = 6 + Math.floor(seeded(6) * 5);
-      const direction = seeded(7) > .5 ? 1 : -1;
-      ctx.translate(w * (centerX + (pointer.current.x - .5) * .06), h * (centerY + (pointer.current.y - .5) * .06));
-      ctx.rotate((seeded(8) - .5) * .42);
-      const t = frame * 0.004;
-      for (let ring = 0; ring < 15; ring++) {
-        ctx.beginPath();
-        const points = 130;
-        for (let i = 0; i <= points; i++) {
-          const a = (i / points) * Math.PI * 2;
-          const pulse = Math.sin(a * waveA + t * direction + ring * .22) * 8 + Math.sin(a * waveB - t * .7) * 4;
-          const r = 40 + ring * 12 + pulse;
-          const x = Math.cos(a) * r * stretchX;
-          const y = Math.sin(a) * r * stretchY;
-          i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = `rgba(155,240,48,${0.72 - ring * .028})`;
-        ctx.lineWidth = ring % 5 === 0 ? 1.4 : .55;
-        ctx.stroke();
-      }
-      ctx.restore();
-      frame++;
-      raf = requestAnimationFrame(draw);
-    };
-    resize(); draw();
+    resize(); animate();
     window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", move);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); window.removeEventListener("pointermove", move); };
-  }, []);
-  return <canvas ref={canvasRef} className="hero-canvas" aria-hidden="true" />;
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+      renderer.domElement.remove();
+    };
+  }, [variation]);
+  return <div ref={containerRef} className="hero-canvas" aria-hidden="true" />;
 }
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
