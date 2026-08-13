@@ -182,8 +182,7 @@ export default function Home() {
       </section>
 
       <section className="works" id="works">
-        <div className="section-intro works-heading shell">
-          <p className="index">01 — WORKS</p>
+        <div className="works-heading shell">
           <h2>SELECTED WORKS</h2>
         </div>
 
@@ -196,10 +195,6 @@ export default function Home() {
                     <div className={`featured-visual art-${project.art}`}>
                       <span>{project.no}</span>
                       <strong>{project.en}</strong>
-                    </div>
-                    <div className="featured-caption">
-                      <span>{project.title}</span>
-                      <span>{project.no} / 18</span>
                     </div>
                   </article>
                 ))}
