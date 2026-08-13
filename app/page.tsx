@@ -47,8 +47,8 @@ function GenerativeCanvas({ variation }: { variation: number }) {
         const x = Math.sin((variation + 1) * 12.9898 + offset * 78.233) * 43758.5453;
         return x - Math.floor(x);
       };
-      const centerX = .62 + seeded(1) * .17;
-      const centerY = .40 + seeded(2) * .16;
+      const centerX = .43 + seeded(1) * .14;
+      const centerY = .43 + seeded(2) * .14;
       const stretchX = 1.08 + seeded(3) * .42;
       const stretchY = .72 + seeded(4) * .28;
       const waveA = 2 + Math.floor(seeded(5) * 4);
@@ -69,7 +69,7 @@ function GenerativeCanvas({ variation }: { variation: number }) {
           i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
         }
         ctx.closePath();
-        ctx.strokeStyle = `rgba(245,245,240,${0.58 - ring * .025})`;
+        ctx.strokeStyle = `rgba(155,240,48,${0.72 - ring * .028})`;
         ctx.lineWidth = ring % 5 === 0 ? 1.4 : .55;
         ctx.stroke();
       }
@@ -96,7 +96,6 @@ export default function Home() {
   return (
     <main>
       <section className="hero" id="home">
-        <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
         <nav className="nav shell">
           <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
             <img src="/brand-logo-cn.svg" alt="" />
@@ -115,15 +114,19 @@ export default function Home() {
           >下一座山 <Arrow /></button>
         </nav>
 
-        <div className="hero-copy shell">
-          <p className="eyebrow">VISUAL DESIGN DIRECTOR · FUZHOU</p>
-          <h1><span>视觉，有其</span><span className="outline">引力。</span></h1>
-          <div className="hero-bottom">
-            <p>以品牌思维驱动设计，<br />在策略与感知之间建立清晰的视觉秩序。</p>
-            <a href="#works" className="round-link" aria-label="查看精选作品">↓</a>
+        <div className="hero-stage">
+          <div className="hero-graphic" aria-hidden="true">
+            <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
           </div>
+          <img className="hero-en-logo" src="/brand-logo-en-green.svg" alt="Studio Almost" />
+          <h1 className="hero-slogan">We’re almost there.</h1>
         </div>
-        <span className="side-note">SCROLL TO DISCOVER — 2026</span>
+
+        <div className="hero-footer shell">
+          <p>VISUAL DESIGN DIRECTOR · FUZHOU</p>
+          <p>以品牌思维驱动设计，在策略与感知之间建立清晰的视觉秩序。</p>
+          <a href="#works" className="round-link" aria-label="查看精选作品">↓</a>
+        </div>
       </section>
 
       <section className="works shell" id="works">
