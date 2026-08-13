@@ -238,7 +238,6 @@ export default function Home() {
         <nav
           className="category-grid shell"
           aria-label="六大作品分类"
-          onMouseLeave={() => setExpandedCategory(0)}
         >
           {categories.map((category, index) => (
             <a
