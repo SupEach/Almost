@@ -133,6 +133,7 @@ export default function Home() {
   const [mountainButtonActive, setMountainButtonActive] = useState(false);
   const [hoveredFeaturedCategory, setHoveredFeaturedCategory] = useState<string | null>(null);
   const [hoveredFilterCategory, setHoveredFilterCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState(0);
   const mountainButtonTimer = useRef<number | null>(null);
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
 
@@ -234,12 +235,18 @@ export default function Home() {
           })}
         </nav>
 
-        <nav className="category-grid shell" aria-label="六大作品分类">
+        <nav
+          className="category-grid shell"
+          aria-label="六大作品分类"
+          onMouseLeave={() => setExpandedCategory(0)}
+        >
           {categories.map((category, index) => (
             <a
-              className={`category-panel category-art-${category.art}`}
+              className={`category-panel category-art-${category.art} ${expandedCategory === index ? "is-expanded" : ""}`}
               href={`/works/${category.slug}`}
               key={category.slug}
+              onMouseEnter={() => setExpandedCategory(index)}
+              onFocus={() => setExpandedCategory(index)}
             >
               <span className="category-number">0{index + 1}</span>
               <span className="category-note">{category.note}</span>
