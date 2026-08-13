@@ -18,7 +18,7 @@ const capabilities = [
   ["活动 / 展览落地", "88"], ["包装与出版设计", "86"], ["UI / AI 设计工作流", "82"],
 ];
 
-function GenerativeCanvas() {
+function GenerativeCanvas({ variation }: { variation: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointer = useRef({ x: 0.5, y: 0.5 });
 
@@ -43,17 +43,29 @@ function GenerativeCanvas() {
       const h = canvas.clientHeight;
       ctx.clearRect(0, 0, w, h);
       ctx.save();
-      ctx.translate(w * (0.71 + (pointer.current.x - .5) * .06), h * (0.48 + (pointer.current.y - .5) * .06));
+      const seeded = (offset: number) => {
+        const x = Math.sin((variation + 1) * 12.9898 + offset * 78.233) * 43758.5453;
+        return x - Math.floor(x);
+      };
+      const centerX = .62 + seeded(1) * .17;
+      const centerY = .40 + seeded(2) * .16;
+      const stretchX = 1.08 + seeded(3) * .42;
+      const stretchY = .72 + seeded(4) * .28;
+      const waveA = 2 + Math.floor(seeded(5) * 4);
+      const waveB = 6 + Math.floor(seeded(6) * 5);
+      const direction = seeded(7) > .5 ? 1 : -1;
+      ctx.translate(w * (centerX + (pointer.current.x - .5) * .06), h * (centerY + (pointer.current.y - .5) * .06));
+      ctx.rotate((seeded(8) - .5) * .42);
       const t = frame * 0.004;
       for (let ring = 0; ring < 15; ring++) {
         ctx.beginPath();
         const points = 130;
         for (let i = 0; i <= points; i++) {
           const a = (i / points) * Math.PI * 2;
-          const pulse = Math.sin(a * 3 + t + ring * .22) * 8 + Math.sin(a * 7 - t * .7) * 4;
+          const pulse = Math.sin(a * waveA + t * direction + ring * .22) * 8 + Math.sin(a * waveB - t * .7) * 4;
           const r = 40 + ring * 12 + pulse;
-          const x = Math.cos(a) * r * 1.28;
-          const y = Math.sin(a) * r * .88;
+          const x = Math.cos(a) * r * stretchX;
+          const y = Math.sin(a) * r * stretchY;
           i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
         }
         ctx.closePath();
@@ -78,21 +90,29 @@ function Arrow() { return <span aria-hidden="true">↗</span>; }
 export default function Home() {
   const [filter, setFilter] = useState("全部");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [graphicVariation, setGraphicVariation] = useState(0);
   const visible = filter === "全部" ? projects : projects.filter(p => p.type === filter);
 
   return (
     <main>
       <section className="hero" id="home">
-        <GenerativeCanvas />
+        <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
         <nav className="nav shell">
-          <a href="#home" className="brand" aria-label="薛譞杰作品集首页">XJ<sup>®</sup></a>
+          <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
+            <img src="/brand-logo-cn.svg" alt="" />
+          </a>
           <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="打开导航">{menuOpen ? "关闭" : "菜单"}</button>
           <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-            <a href="#works" onClick={() => setMenuOpen(false)}>作品</a>
-            <a href="#about" onClick={() => setMenuOpen(false)}>关于</a>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>联系</a>
+            <a href="#works" onClick={() => setMenuOpen(false)}>Works</a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
           </div>
-          <a href="mailto:levelfoto@gmail.com" className="contact-pill">开始合作 <Arrow /></a>
+          <button
+            type="button"
+            className="contact-pill"
+            onClick={() => setGraphicVariation(value => value + 1)}
+            aria-label="刷新可变图形背景"
+          >下一座山 <Arrow /></button>
         </nav>
 
         <div className="hero-copy shell">
