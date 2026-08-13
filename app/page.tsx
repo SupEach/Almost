@@ -124,7 +124,7 @@ export default function Home() {
             className="contact-pill"
             onClick={() => setGraphicVariation(value => value + 1)}
             aria-label="刷新可变图形背景"
-          >下一座山 <Arrow /></button>
+          >下一座山</button>
         </nav>
 
         <div className="hero-stage">
@@ -141,9 +141,13 @@ export default function Home() {
         </div>
 
         <div className="hero-footer shell">
-          <p>VISUAL DESIGN DIRECTOR · FUZHOU</p>
-          <p>以品牌思维驱动设计，在策略与感知之间建立清晰的视觉秩序。</p>
-          <a href="#works" className="round-link" aria-label="查看精选作品">↓</a>
+          <div className="studio-meta">
+            <strong>SINCE 2014</strong>
+            <span>VISUAL DESIGN STUDIO · BASE FUZHOU</span>
+          </div>
+          <a href="#works" className="round-link" aria-label="向下查看精选作品">
+            <img src="/main-graphic-circle.svg" alt="" />
+          </a>
         </div>
       </section>
 
