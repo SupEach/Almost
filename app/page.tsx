@@ -103,8 +103,17 @@ export default function Home() {
   const [filter, setFilter] = useState("全部");
   const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
+  const [mountainButtonActive, setMountainButtonActive] = useState(false);
+  const mountainButtonTimer = useRef<number | null>(null);
   const visible = filter === "全部" ? projects : projects.filter(p => p.type === filter);
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
+
+  const showNextMountain = () => {
+    setGraphicVariation(value => value + 1);
+    setMountainButtonActive(true);
+    if (mountainButtonTimer.current) window.clearTimeout(mountainButtonTimer.current);
+    mountainButtonTimer.current = window.setTimeout(() => setMountainButtonActive(false), 650);
+  };
 
   return (
     <main>
@@ -121,8 +130,8 @@ export default function Home() {
           </div>
           <button
             type="button"
-            className="contact-pill"
-            onClick={() => setGraphicVariation(value => value + 1)}
+            className={`contact-pill ${mountainButtonActive ? "is-selected" : ""}`}
+            onClick={showNextMountain}
             aria-label="刷新可变图形背景"
           >下一座山</button>
         </nav>
@@ -146,7 +155,7 @@ export default function Home() {
             <span>VISUAL DESIGN STUDIO · BASE FUZHOU</span>
           </div>
           <a href="#works" className="round-link" aria-label="向下查看精选作品">
-            <img src="/main-graphic-circle.svg" alt="" />
+            <span aria-hidden="true">↓</span>
           </a>
         </div>
       </section>
