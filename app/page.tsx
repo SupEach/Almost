@@ -20,6 +20,15 @@ const capabilities = [
   ["活动 / 展览落地", "88"], ["包装与出版设计", "86"], ["UI / AI 设计工作流", "82"],
 ];
 
+const heroSlogans = [
+  { lang: "en", text: "We’re almost there." },
+  { lang: "zh-CN", text: "直到下一座山" },
+  { lang: "ja", text: "もう少しでたどり着く。" },
+  { lang: "fr", text: "Nous y sommes presque." },
+  { lang: "es", text: "Ya casi estamos." },
+  { lang: "ru", text: "Мы почти у цели." },
+];
+
 function GenerativeCanvas({ variation }: { variation: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +104,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
   const visible = filter === "全部" ? projects : projects.filter(p => p.type === filter);
+  const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
 
   return (
     <main>
@@ -121,8 +131,13 @@ export default function Home() {
           <div className="hero-graphic" aria-hidden="true">
             <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
           </div>
-          <img className="hero-en-logo" src="/brand-logo-en-green.svg" alt="Studio Almost" />
-          <h1 className="hero-slogan">We’re almost there.</h1>
+          <img className="hero-en-logo" src="/brand-logo-en-orange.svg" alt="Studio Almost" />
+          <h1
+            key={graphicVariation}
+            className="hero-slogan"
+            lang={currentSlogan.lang}
+            aria-live="polite"
+          >{currentSlogan.text}</h1>
         </div>
 
         <div className="hero-footer shell">
