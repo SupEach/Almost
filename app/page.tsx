@@ -52,12 +52,12 @@ const capabilityPeaks = [
 ];
 
 const heroSlogans = [
-  { lang: "en", text: "We’re almost there." },
-  { lang: "zh-CN", text: "直到下一座山" },
-  { lang: "ja", text: "もう少しでたどり着く。" },
-  { lang: "fr", text: "Nous y sommes presque." },
-  { lang: "es", text: "Ya casi estamos." },
-  { lang: "ru", text: "Мы почти у цели." },
+  { lang: "en", label: "EN", text: "We’re almost there." },
+  { lang: "zh-CN", label: "ZH", text: "直到下一座山" },
+  { lang: "ja", label: "JA", text: "もう少しでたどり着く。" },
+  { lang: "fr", label: "FR", text: "Nous y sommes presque." },
+  { lang: "es", label: "ES", text: "Ya casi estamos." },
+  { lang: "ru", label: "RU", text: "Мы почти у цели." },
 ];
 
 function createSeededRandom(seed: number) {
@@ -98,8 +98,14 @@ function GenerativeCanvas({ variation }: { variation: number }) {
     renderer.setClearColor(0xffffff, 0);
     container.appendChild(renderer.domElement);
 
-    const geometry = new THREE.PlaneGeometry(178, 154, 46, 42);
-    const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true, transparent: true, opacity: .88 });
+    const compactLayout = container.clientWidth <= 800;
+    const geometry = new THREE.PlaneGeometry(178, 154, compactLayout ? 30 : 40, compactLayout ? 32 : 36);
+    const material = new THREE.MeshBasicMaterial({
+      wireframe: true,
+      vertexColors: true,
+      transparent: true,
+      opacity: compactLayout ? .68 : .78,
+    });
     const position = geometry.attributes.position as THREE.BufferAttribute;
     const colors: number[] = [];
     const rawHeights: number[] = [];
@@ -163,7 +169,7 @@ function GenerativeCanvas({ variation }: { variation: number }) {
       const normalizedHeight = Math.max(0, Math.min(1, (rawHeights[i] - rawMin) / rawRange));
       const framedHeight = framedBase + Math.pow(normalizedHeight, .92) * (framedPeak - framedBase);
       position.setZ(i, framedHeight);
-      const c = .16 + (1 - normalizedHeight) * .62;
+      const c = .2 + (1 - normalizedHeight) * .54;
       colors.push(c, c, c);
     }
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
@@ -178,9 +184,9 @@ function GenerativeCanvas({ variation }: { variation: number }) {
     let raf = 0;
     const animationStart = performance.now();
     const driftDirection = random() > .5 ? 1 : -1;
+    const peakFrameTarget = .6 + random() * .08;
     const projectedVertex = new THREE.Vector3();
-    const fitsSafeFrame = (heightScale: number) => {
-      mountain.scale.z = heightScale;
+    const getHighestProjectedY = () => {
       mountain.updateMatrixWorld(true);
       camera.updateMatrixWorld(true);
       let highestNdc = Number.NEGATIVE_INFINITY;
@@ -188,7 +194,27 @@ function GenerativeCanvas({ variation }: { variation: number }) {
         projectedVertex.fromBufferAttribute(position, i).applyMatrix4(mountain.matrixWorld).project(camera);
         highestNdc = Math.max(highestNdc, projectedVertex.y);
       }
-      return highestNdc <= .72;
+      return highestNdc;
+    };
+    const fitsSafeFrame = (heightScale: number) => {
+      mountain.scale.z = heightScale;
+      return getHighestProjectedY() <= .72;
+    };
+    const alignPeakToFrame = () => {
+      let low = -36;
+      let high = 26;
+      mountain.position.y = low;
+      const lowProjection = getHighestProjectedY();
+      mountain.position.y = high;
+      const projectionIncreasesWithY = getHighestProjectedY() > lowProjection;
+      for (let i = 0; i < 16; i++) {
+        const candidate = (low + high) / 2;
+        mountain.position.y = candidate;
+        const candidateProjection = getHighestProjectedY();
+        if ((candidateProjection < peakFrameTarget) === projectionIncreasesWithY) low = candidate;
+        else high = candidate;
+      }
+      mountain.position.y = (low + high) / 2;
     };
     const fitMountainToViewport = () => {
       let safeScale = 1;
@@ -203,6 +229,7 @@ function GenerativeCanvas({ variation }: { variation: number }) {
         safeScale = low;
       }
       mountain.scale.z = safeScale;
+      alignPeakToFrame();
       mountain.updateMatrixWorld(true);
       container.dataset.mountainFrameScale = safeScale.toFixed(3);
     };
@@ -247,7 +274,8 @@ export default function Home() {
   const [hoveredFilterCategory, setHoveredFilterCategory] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState(0);
   const mountainButtonTimer = useRef<number | null>(null);
-  const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
+  const currentSloganIndex = graphicVariation % heroSlogans.length;
+  const currentSlogan = heroSlogans[currentSloganIndex];
 
   const showNextMountain = () => {
     setGraphicVariation(value => value + 1);
@@ -256,6 +284,10 @@ export default function Home() {
     mountainButtonTimer.current = window.setTimeout(() => setMountainButtonActive(false), 650);
   };
 
+  useEffect(() => () => {
+    if (mountainButtonTimer.current) window.clearTimeout(mountainButtonTimer.current);
+  }, []);
+
   return (
     <main>
       <section className="hero" id="home">
@@ -263,7 +295,7 @@ export default function Home() {
           <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
             <img src="/brand-logo-cn.svg" alt="" />
           </a>
-          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="打开导航">{menuOpen ? "关闭" : "菜单"}</button>
+          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? "关闭导航" : "打开导航"}>{menuOpen ? "关闭" : "菜单"}</button>
           <div className={`nav-links ${menuOpen ? "open" : ""}`}>
             <a href="#works" onClick={() => setMenuOpen(false)}>Works</a>
             <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
@@ -274,20 +306,33 @@ export default function Home() {
             className={`contact-pill ${mountainButtonActive ? "is-selected" : ""}`}
             onClick={showNextMountain}
             aria-label="刷新可变图形背景"
-          >下一座山</button>
+          >
+            <span>下一座山</span>
+            <span className="mountain-button-index" aria-hidden="true">{String((currentSloganIndex + 1) % heroSlogans.length + 1).padStart(2, "0")}</span>
+          </button>
         </nav>
+
+        <div className="hero-context shell" aria-hidden="true">
+          <span>INDEPENDENT VISUAL DESIGN STUDIO</span>
+          <span>FUZHOU · CHINA</span>
+        </div>
 
         <div className="hero-stage">
           <div className="hero-graphic" aria-hidden="true">
             <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
           </div>
           <img className="hero-en-logo" src="/brand-logo-en-orange.svg" alt="Studio Almost" />
-          <h1
-            key={graphicVariation}
-            className="hero-slogan"
-            lang={currentSlogan.lang}
-            aria-live="polite"
-          >{currentSlogan.text}</h1>
+          <div className="hero-message" key={graphicVariation}>
+            <h1
+              className="hero-slogan"
+              lang={currentSlogan.lang}
+              aria-live="polite"
+            >{currentSlogan.text}</h1>
+            <div className="hero-sequence" aria-hidden="true">
+              <span>{String(currentSloganIndex + 1).padStart(2, "0")} / {String(heroSlogans.length).padStart(2, "0")}</span>
+              <span>{currentSlogan.label}</span>
+            </div>
+          </div>
         </div>
 
         <div className="hero-footer shell">
@@ -295,9 +340,12 @@ export default function Home() {
             <strong>SINCE 2014</strong>
             <span>VISUAL DESIGN STUDIO · BASE FUZHOU</span>
           </div>
-          <a href="#works" className="round-link" aria-label="向下查看精选作品">
-            <span aria-hidden="true">↓</span>
-          </a>
+          <div className="hero-scroll">
+            <span aria-hidden="true">SCROLL TO EXPLORE</span>
+            <a href="#works" className="round-link" aria-label="向下查看精选作品">
+              <span aria-hidden="true">↓</span>
+            </a>
+          </div>
         </div>
       </section>
 
