@@ -85,9 +85,14 @@ function GenerativeCanvas({ variation }: { variation: number }) {
     const simplex = new SimplexNoise(noiseRandom);
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0xffffff, 58, 190);
-    const camera = new THREE.PerspectiveCamera(66 + random() * 9, 1, .1, 1000);
-    camera.position.set((random() - .5) * 18, 9 + random() * 9, 76 + random() * 18);
-    camera.lookAt((random() - .5) * 8, 8 + random() * 8, 0);
+    const camera = new THREE.PerspectiveCamera(68 + random() * 4, 1, .1, 1000);
+    const cameraX = (random() - .5) * 12;
+    const cameraY = 12 + random() * 4;
+    const cameraZ = 92 + random() * 6;
+    const lookAtX = (random() - .5) * 7;
+    const lookAtY = 8 + random() * 3;
+    camera.position.set(cameraX, cameraY, cameraZ);
+    camera.lookAt(lookAtX, lookAtY, 0);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0xffffff, 0);
@@ -97,6 +102,9 @@ function GenerativeCanvas({ variation }: { variation: number }) {
     const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true, transparent: true, opacity: .88 });
     const position = geometry.attributes.position as THREE.BufferAttribute;
     const colors: number[] = [];
+    const rawHeights: number[] = [];
+    let rawMin = Number.POSITIVE_INFINITY;
+    let rawMax = Number.NEGATIVE_INFINITY;
     const peakCount = 2 + Math.floor(random() * 4);
     const peaks = Array.from({ length: peakCount }, () => ({
       x: (random() - .5) * 92,
@@ -143,32 +151,73 @@ function GenerativeCanvas({ variation }: { variation: number }) {
       z += simplex.noise2D(x * noiseFrequency * 2.4 - 40, y * noiseFrequency * 2.4 + 40) * noiseAmplitude * .28;
       const edge = Math.max(0, Math.sqrt(x * x + y * y) - 62);
       z -= Math.pow(edge, 1.55) * .24;
-      position.setZ(i, z);
+      rawHeights.push(z);
+      rawMin = Math.min(rawMin, z);
+      rawMax = Math.max(rawMax, z);
+    }
 
-      const normalizedHeight = Math.max(0, Math.min(1, (z + 24) / 92));
+    const framedBase = -21 - random() * 3;
+    const framedPeak = 58 + random() * 6;
+    const rawRange = Math.max(1, rawMax - rawMin);
+    for (let i = 0; i < position.count; i++) {
+      const normalizedHeight = Math.max(0, Math.min(1, (rawHeights[i] - rawMin) / rawRange));
+      const framedHeight = framedBase + Math.pow(normalizedHeight, .92) * (framedPeak - framedBase);
+      position.setZ(i, framedHeight);
       const c = .16 + (1 - normalizedHeight) * .62;
       colors.push(c, c, c);
     }
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+    geometry.rotateZ((random() - .5) * .52);
     geometry.computeVertexNormals();
     const mountain = new THREE.Mesh(geometry, material);
     mountain.rotation.x = -Math.PI / 2;
-    mountain.rotation.z = (random() - .5) * .52;
-    mountain.position.y = -4 + random() * 5;
+    mountain.position.y = -7 + random() * 2;
     scene.add(mountain);
-    container.dataset.mountainSignature = `${seed}-${peakCount}-${topology}`;
+    container.dataset.mountainSignature = `${seed}-${peakCount}-${topology}-${framedPeak.toFixed(1)}`;
 
     let raf = 0;
-    const rotationDirection = random() > .5 ? 1 : -1;
+    const animationStart = performance.now();
+    const driftDirection = random() > .5 ? 1 : -1;
+    const projectedVertex = new THREE.Vector3();
+    const fitsSafeFrame = (heightScale: number) => {
+      mountain.scale.z = heightScale;
+      mountain.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
+      let highestNdc = Number.NEGATIVE_INFINITY;
+      for (let i = 0; i < position.count; i++) {
+        projectedVertex.fromBufferAttribute(position, i).applyMatrix4(mountain.matrixWorld).project(camera);
+        highestNdc = Math.max(highestNdc, projectedVertex.y);
+      }
+      return highestNdc <= .72;
+    };
+    const fitMountainToViewport = () => {
+      let safeScale = 1;
+      if (!fitsSafeFrame(safeScale)) {
+        let low = .18;
+        let high = 1;
+        for (let i = 0; i < 14; i++) {
+          const candidate = (low + high) / 2;
+          if (fitsSafeFrame(candidate)) low = candidate;
+          else high = candidate;
+        }
+        safeScale = low;
+      }
+      mountain.scale.z = safeScale;
+      mountain.updateMatrixWorld(true);
+      container.dataset.mountainFrameScale = safeScale.toFixed(3);
+    };
     const resize = () => {
       const { width, height } = container.getBoundingClientRect();
       if (!width || !height) return;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
+      fitMountainToViewport();
     };
     const animate = () => {
-      mountain.rotation.z += .00016 * rotationDirection;
+      const elapsed = (performance.now() - animationStart) * .00012 * driftDirection;
+      camera.position.x = cameraX + Math.sin(elapsed) * .8;
+      camera.lookAt(lookAtX, lookAtY, 0);
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -181,6 +230,7 @@ function GenerativeCanvas({ variation }: { variation: number }) {
       material.dispose();
       renderer.dispose();
       delete container.dataset.mountainSignature;
+      delete container.dataset.mountainFrameScale;
       renderer.domElement.remove();
     };
   }, [variation]);
