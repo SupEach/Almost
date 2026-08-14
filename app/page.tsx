@@ -60,57 +60,115 @@ const heroSlogans = [
   { lang: "ru", text: "Мы почти у цели." },
 ];
 
+function createSeededRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ value >>> 15, value | 1);
+    value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+    return ((value ^ value >>> 14) >>> 0) / 4294967296;
+  };
+}
+
 function GenerativeCanvas({ variation }: { variation: number }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
+    const randomSeed = new Uint32Array(1);
+    window.crypto.getRandomValues(randomSeed);
+    const seed = (randomSeed[0] ^ Math.imul(variation + 1, 0x9e3779b1)) >>> 0;
+    const random = createSeededRandom(seed);
+    const noiseRandom = createSeededRandom(seed ^ 0xa511e9b3);
+    const simplex = new SimplexNoise(noiseRandom);
     const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xffffff, 40, 160);
-    const camera = new THREE.PerspectiveCamera(75, 1, .1, 1000);
-    camera.position.set(0, 10, 75);
-    camera.lookAt(0, 15, 0);
+    scene.fog = new THREE.Fog(0xffffff, 58, 190);
+    const camera = new THREE.PerspectiveCamera(66 + random() * 9, 1, .1, 1000);
+    camera.position.set((random() - .5) * 18, 9 + random() * 9, 76 + random() * 18);
+    camera.lookAt((random() - .5) * 8, 8 + random() * 8, 0);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
     renderer.setClearColor(0xffffff, 0);
     container.appendChild(renderer.domElement);
 
-    const geometry = new THREE.PlaneGeometry(160, 160, 38, 38);
-    const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true });
-    const simplex = new SimplexNoise();
-    const seed = Math.random() * 100 + variation * 17.31;
+    const geometry = new THREE.PlaneGeometry(178, 154, 46, 42);
+    const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true, transparent: true, opacity: .88 });
     const position = geometry.attributes.position as THREE.BufferAttribute;
     const colors: number[] = [];
+    const peakCount = 2 + Math.floor(random() * 4);
+    const peaks = Array.from({ length: peakCount }, () => ({
+      x: (random() - .5) * 92,
+      y: (random() - .5) * 72,
+      height: 26 + random() * 52,
+      widthX: 150 + random() * 720,
+      widthY: 130 + random() * 620,
+      angle: random() * Math.PI,
+    }));
+    const topology = variation % 4;
+    const warpStrength = 2 + random() * 8;
+    const noiseFrequency = .025 + random() * .07;
+    const noiseAmplitude = 5 + random() * 16;
+    const ridgeAngle = random() * Math.PI;
+    const ridgeOffset = (random() - .5) * 38;
+    const ridgeWidth = 8 + random() * 22;
+    const wavePhase = random() * Math.PI * 2;
+
     for (let i = 0; i < position.count; i++) {
       let x = position.getX(i);
       let y = position.getY(i);
-      x += simplex.noise2D(x * .03 + seed * .01, y * .03) * 4;
-      y += simplex.noise2D(y * .03 + 100, x * .03 + 100 + seed * .01) * 4;
+      x += simplex.noise2D(x * .026, y * .026) * warpStrength;
+      y += simplex.noise2D(y * .026 + 80, x * .026 - 80) * warpStrength;
       position.setXY(i, x, y);
-      const dist = Math.sqrt(x * x + y * y);
-      let z = 50 * Math.exp(-(x * x + y * y) / 1200);
-      z += Math.abs(simplex.noise2D(x * .06 + seed, y * .06 + seed)) * 6;
-      if (dist > 55) z -= Math.pow(dist - 55, 2) * .06;
+
+      let z = -10;
+      for (const peak of peaks) {
+        const dx = x - peak.x;
+        const dy = y - peak.y;
+        const cos = Math.cos(peak.angle);
+        const sin = Math.sin(peak.angle);
+        const rx = dx * cos - dy * sin;
+        const ry = dx * sin + dy * cos;
+        z += peak.height * Math.exp(-(rx * rx / peak.widthX + ry * ry / peak.widthY));
+      }
+
+      const ridgeDistance = Math.abs(x * Math.cos(ridgeAngle) + y * Math.sin(ridgeAngle) - ridgeOffset);
+      if (topology === 0) z += 24 * Math.exp(-(ridgeDistance * ridgeDistance) / (ridgeWidth * ridgeWidth));
+      if (topology === 1) z -= 32 * Math.exp(-(x * x + y * y) / 260);
+      if (topology === 2) z += (x * Math.cos(ridgeAngle) + y * Math.sin(ridgeAngle)) * .2;
+      if (topology === 3) z += 12 * Math.sin((x + y) * .045 + wavePhase);
+
+      z += simplex.noise2D(x * noiseFrequency + 20, y * noiseFrequency - 20) * noiseAmplitude;
+      z += simplex.noise2D(x * noiseFrequency * 2.4 - 40, y * noiseFrequency * 2.4 + 40) * noiseAmplitude * .28;
+      const edge = Math.max(0, Math.sqrt(x * x + y * y) - 62);
+      z -= Math.pow(edge, 1.55) * .24;
       position.setZ(i, z);
-      const c = Math.max(0, Math.min(1, 1 - z / 20 - .01));
+
+      const normalizedHeight = Math.max(0, Math.min(1, (z + 24) / 92));
+      const c = .16 + (1 - normalizedHeight) * .62;
       colors.push(c, c, c);
     }
     geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
     geometry.computeVertexNormals();
     const mountain = new THREE.Mesh(geometry, material);
     mountain.rotation.x = -Math.PI / 2;
+    mountain.rotation.z = (random() - .5) * .52;
+    mountain.position.y = -4 + random() * 5;
     scene.add(mountain);
+    container.dataset.mountainSignature = `${seed}-${peakCount}-${topology}`;
 
     let raf = 0;
+    const rotationDirection = random() > .5 ? 1 : -1;
     const resize = () => {
       const { width, height } = container.getBoundingClientRect();
+      if (!width || !height) return;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
     };
     const animate = () => {
-      mountain.rotation.z += .0005;
+      mountain.rotation.z += .00016 * rotationDirection;
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -122,6 +180,7 @@ function GenerativeCanvas({ variation }: { variation: number }) {
       geometry.dispose();
       material.dispose();
       renderer.dispose();
+      delete container.dataset.mountainSignature;
       renderer.domElement.remove();
     };
   }, [variation]);
