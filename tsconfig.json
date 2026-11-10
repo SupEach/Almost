@@ -5,6 +5,7 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    "types": ["node", "@cloudflare/workers-types"],
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -25,5 +26,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "dist", ".wrangler", ".vinext", ".pnpm-store"]
 }

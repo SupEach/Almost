@@ -1,31 +1,52 @@
-# vinext-starter
+# Studio Almost — 不周山设计作品集
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+React / TypeScript / vinext 网站，目前包含首页和六个作品分类落地页。
 
-## Prerequisites
+## 本地预览
 
-- Node.js `>=22.13.0`
+使用 Node.js >=22.13.0 和 pnpm 11.22.0。沿用现有 pnpm 安装树，pnpm-lock.yaml 为依赖依据；package-lock.json 仅保留历史参考，请勿混用 npm install。
 
-## Quick Start
-
-```bash
-npm install
-npm run dev
-npm run build
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-This starter does not use `wrangler.jsonc`.
+打开 http://127.0.0.1:3000/，保持启动终端运行。端口被占用会明确报错，不会自动跳到另一个端口。首次启动需要完成编译，等待 Local 地址出现。
 
-## Included Shape
+如果旧预览打不开，先确认开发服务仍在运行，并使用上述地址；Windows 上 localhost 可能解析为 IPv6，而 127.0.0.1 使用 IPv4。指定其他地址时使用 vinext 的 --hostname 参数（不是 --host）。
 
-- edit site code under `app/`
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
+## 常用检查
+
+- `pnpm lint`：代码规范检查。
+- `pnpm typecheck`：TypeScript 类型检查。
+- `pnpm test`：构建并验证首页、六个分类页和未知分类回退，共 10 项。
+- `pnpm check`：依次执行全部检查。
+- `pnpm build` / `pnpm start`：生产构建 / 本地生产预览。
+- `pnpm db:generate`：修改数据库 schema 后生成迁移。
+
+## 后续设计修改入口
+
+| 内容 | 文件 |
+| --- | --- |
+| 首页结构、导航与交互状态 | app/page.tsx |
+| 样式、字体、移动端规则 | app/globals.css |
+| 首页与分类页共用分类数据 | app/content/categories.ts |
+| 精选作品、能力数值、多语言标语 | app/content/home.ts |
+| 36 座山、引语、坐标、地形参数 | app/content/mountains.ts |
+| 山体生成与 WebGL 生命周期 | app/components/GenerativeCanvas.tsx |
+| 标语解密动画 | app/components/LanguageDecryptedText.tsx |
+| 六个分类页共用模板 | app/works/[slug]/page.tsx |
+| 网站标题与分享信息 | app/layout.tsx |
+
+先阅读 AGENTS.md、docs/PROJECT-STATE.md 和 docs/DESIGN-SYSTEM.md。内容与动画模块已拆分；既有 CSS 选择器和设计规则继续沿用。Three.js 通过独立模块加载；不支持 WebGL 时保留文字与导航。
+
+## 当前限制
+
+作品区仍使用 CSS 占位图，分类页尚未填入项目档案。分类英文名称沿用现有页面。检查中仍有三个 SVG 原生 img 提示及 Three.js 大文件提示；它们不阻止构建。
+
+## Hosting
+
+vite.config.ts 使用 Cloudflare 插件模拟运行环境；worker/index.ts 为 Worker 入口。build/sites-vite-plugin.ts 将 .openai/hosting.json 与迁移文件复制到构建结果。当前无 D1/R2 绑定，数据库接口仅作预留。
 
 ## Workspace Auth Headers
 
@@ -86,15 +107,3 @@ or enforce explicit server-side membership or allowlist checks.
 
 Use SIWC for account pages, user-specific dashboards, saved records, and write
 actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Useful Commands
-
-- `npm run dev`: start local development
-- `npm run build`: verify the vinext build output
-- `npm test`: build the starter and verify its rendered loading skeleton
-- `npm run db:generate`: generate Drizzle migrations after schema changes
-
-## Learn More
-
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)

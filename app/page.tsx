@@ -1,132 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import SimplexNoise from "simplex-noise";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { categories } from "./content/categories";
+import { featuredProjects, capabilityPeaks, heroSlogans } from "./content/home";
+import { mountainScenes } from "./content/mountains";
+import LanguageDecryptedText from "./components/LanguageDecryptedText";
 
-const categories = [
-  { label: "Branding & Logos", type: "品牌及徽标", slug: "branding-logos", art: "identity", note: "IDENTITY / SYSTEM / SYMBOL" },
-  { label: "Events & Exhibitions", type: "活动和展览", slug: "events-exhibitions", art: "events", note: "SPACE / CULTURE / EXPERIENCE" },
-  { label: "Posters & Graphics", type: "海报和图形", slug: "posters-graphics", art: "posters", note: "IMAGE / TYPE / MESSAGE" },
-  { label: "Editorial & Music", type: "书籍和音乐装帧", slug: "editorial-music", art: "editorial", note: "BOOK / ALBUM / NARRATIVE" },
-  { label: "Packaging & Products", type: "包装和产品", slug: "packaging-products", art: "packaging", note: "OBJECT / MATERIAL / SHELF" },
-  { label: "Commercial & Web", type: "商业和网站", slug: "commercial-web", art: "digital", note: "CAMPAIGN / SCREEN / WEB" },
-];
-
-const projects = [
-  { no: "01", title: "放假公园", en: "HOLIDAY PARK", type: "品牌及徽标", year: "2023", art: "park" },
-  { no: "02", title: "连马讨海音乐节", en: "SEA CALLS", type: "活动和展览", year: "2023", art: "sea" },
-  { no: "03", title: "李健 · 门", en: "THE DOOR", type: "书籍和音乐装帧", year: "2021", art: "door" },
-  { no: "04", title: "猎毒人", en: "THE DRUG HUNTER", type: "海报和图形", year: "2018", art: "poster" },
-  { no: "05", title: "国岚茶", en: "GUOLAN TEA", type: "包装和产品", year: "2023", art: "tea" },
-  { no: "06", title: "野小兽", en: "YESOUL", type: "商业和网站", year: "2022", art: "ui" },
-];
-
-const featuredProjects = [
-  { no: "01", title: "放假公园", en: "HOLIDAY PARK", art: "park", type: "品牌及徽标" },
-  { no: "02", title: "漂浮公园", en: "FLOATING PARK", art: "sea", type: "品牌及徽标" },
-  { no: "03", title: "MAKERLIVE", en: "MAKER LIVE", art: "poster", type: "品牌及徽标" },
-  { no: "04", title: "连马讨海音乐节", en: "SEA CALLS", art: "poster", type: "活动和展览" },
-  { no: "05", title: "为爱麦跑", en: "RUN FOR LOVE", art: "ui", type: "活动和展览" },
-  { no: "06", title: "周末实验室", en: "WEEKEND LAB", art: "ui", type: "活动和展览" },
-  { no: "07", title: "猎毒人", en: "THE DRUG HUNTER", art: "poster", type: "海报和图形" },
-  { no: "08", title: "中国式关系", en: "CHINESE STYLE", art: "door", type: "海报和图形" },
-  { no: "09", title: "次声波", en: "INFRASOUND", art: "sea", type: "海报和图形" },
-  { no: "10", title: "李健 · 门", en: "THE DOOR", art: "door", type: "书籍和音乐装帧" },
-  { no: "11", title: "美若黎明", en: "DAWN", art: "tea", type: "书籍和音乐装帧" },
-  { no: "12", title: "罗小黑战记", en: "THE LEGEND OF HEI", art: "park", type: "书籍和音乐装帧" },
-  { no: "13", title: "国岚茶", en: "GUOLAN TEA", art: "tea", type: "包装和产品" },
-  { no: "14", title: "春夏秋冬", en: "FOUR SEASONS", art: "sea", type: "包装和产品" },
-  { no: "15", title: "苏姗酵室", en: "SUSAN FERMENTS", art: "tea", type: "包装和产品" },
-  { no: "16", title: "野小兽", en: "YESOUL", art: "ui", type: "商业和网站" },
-  { no: "17", title: "康姆士", en: "COM'Z", art: "park", type: "商业和网站" },
-  { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door", type: "商业和网站" },
-];
-
-const capabilityPeaks = [
-  { label: "项目阅读", height: 52 },
-  { label: "趋势感知", height: 43 },
-  { label: "审美判断", height: 58 },
-  { label: "设计执行", height: 47 },
-  { label: "团队管理", height: 54 },
-];
-
-const heroSlogans = [
-  { lang: "en", label: "EN", text: "We’re almost there." },
-  { lang: "zh-CN", label: "ZH", text: "直到下一座山" },
-  { lang: "ja", label: "JA", text: "もう少しでたどり着く。" },
-  { lang: "fr", label: "FR", text: "Nous y sommes presque." },
-  { lang: "es", label: "ES", text: "Ya casi estamos." },
-  { lang: "ru", label: "RU", text: "Мы почти у цели." },
-];
-
-function GenerativeCanvas({ variation }: { variation: number }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.Fog(0xffffff, 40, 160);
-    const camera = new THREE.PerspectiveCamera(75, 1, .1, 1000);
-    camera.position.set(0, 10, 75);
-    camera.lookAt(0, 15, 0);
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.setClearColor(0xffffff, 0);
-    container.appendChild(renderer.domElement);
-
-    const geometry = new THREE.PlaneGeometry(160, 160, 38, 38);
-    const material = new THREE.MeshBasicMaterial({ wireframe: true, vertexColors: true });
-    const simplex = new SimplexNoise();
-    const seed = Math.random() * 100 + variation * 17.31;
-    const position = geometry.attributes.position as THREE.BufferAttribute;
-    const colors: number[] = [];
-    for (let i = 0; i < position.count; i++) {
-      let x = position.getX(i);
-      let y = position.getY(i);
-      x += simplex.noise2D(x * .03 + seed * .01, y * .03) * 4;
-      y += simplex.noise2D(y * .03 + 100, x * .03 + 100 + seed * .01) * 4;
-      position.setXY(i, x, y);
-      const dist = Math.sqrt(x * x + y * y);
-      let z = 50 * Math.exp(-(x * x + y * y) / 1200);
-      z += Math.abs(simplex.noise2D(x * .06 + seed, y * .06 + seed)) * 6;
-      if (dist > 55) z -= Math.pow(dist - 55, 2) * .06;
-      position.setZ(i, z);
-      const c = Math.max(0, Math.min(1, 1 - z / 20 - .01));
-      colors.push(c, c, c);
-    }
-    geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-    geometry.computeVertexNormals();
-    const mountain = new THREE.Mesh(geometry, material);
-    mountain.rotation.x = -Math.PI / 2;
-    scene.add(mountain);
-
-    let raf = 0;
-    const resize = () => {
-      const { width, height } = container.getBoundingClientRect();
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height, false);
-    };
-    const animate = () => {
-      mountain.rotation.z += .0005;
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(animate);
-    };
-    resize(); animate();
-    window.addEventListener("resize", resize);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-      renderer.domElement.remove();
-    };
-  }, [variation]);
-  return <div ref={containerRef} className="hero-canvas" aria-hidden="true" />;
-}
+const GenerativeCanvas = lazy(() => import("./components/GenerativeCanvas"));
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
 
@@ -138,8 +18,9 @@ export default function Home() {
   const [hoveredFilterCategory, setHoveredFilterCategory] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState(0);
   const mountainButtonTimer = useRef<number | null>(null);
-  const currentSloganIndex = graphicVariation % heroSlogans.length;
-  const currentSlogan = heroSlogans[currentSloganIndex];
+  const currentSceneIndex = graphicVariation % mountainScenes.length;
+  const currentScene = mountainScenes[currentSceneIndex];
+  const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
 
   const showNextMountain = () => {
     setGraphicVariation(value => value + 1);
@@ -154,36 +35,43 @@ export default function Home() {
 
   return (
     <main>
-      <section className="hero" id="home">
-        <nav className="nav shell">
-          <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
-            <img src="/brand-logo-cn.svg" alt="" />
-          </a>
-          <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? "关闭导航" : "打开导航"}>{menuOpen ? "关闭" : "菜单"}</button>
-          <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-            <a href="#works" onClick={() => setMenuOpen(false)}>Works</a>
-            <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
-          </div>
-          <button
-            type="button"
-            className={`contact-pill ${mountainButtonActive ? "is-selected" : ""}`}
-            onClick={showNextMountain}
-            aria-label="刷新可变图形背景"
-          >
-            <span>下一座山</span>
-            <span className="mountain-button-index" aria-hidden="true">{String((currentSloganIndex + 1) % heroSlogans.length + 1).padStart(2, "0")}</span>
-          </button>
-        </nav>
+      <nav className="nav shell">
+        <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
+          <img src="/brand-logo-cn.svg" alt="" />
+        </a>
+        <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? "关闭导航" : "打开导航"}>{menuOpen ? "关闭" : "菜单"}</button>
+        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
+          <a href="#works" onClick={() => setMenuOpen(false)}>Works</a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+        </div>
+        <button
+          type="button"
+          className={`contact-pill ${mountainButtonActive ? "is-selected" : ""}`}
+          onClick={showNextMountain}
+          aria-label="切换至下一座山"
+        >下一座山</button>
+      </nav>
 
-        <div className="hero-context shell" aria-hidden="true">
-          <span>INDEPENDENT VISUAL DESIGN STUDIO</span>
-          <span>FUZHOU · CHINA</span>
+      <section className="hero" id="home">
+
+        <div className="hero-context shell">
+          <p className="hero-quote" key={currentSceneIndex} aria-live="polite">
+            <span>“{currentScene.quote}”</span>
+            <cite>——{currentScene.credit}</cite>
+          </p>
+          <span className="hero-context-brand">STUDIO ALMOST, 不周山设计</span>
         </div>
 
         <div className="hero-stage">
           <div className="hero-graphic" aria-hidden="true">
-            <GenerativeCanvas key={graphicVariation} variation={graphicVariation} />
+            <Suspense fallback={<div className="hero-canvas" aria-hidden="true" />}>
+              <GenerativeCanvas
+                key={graphicVariation}
+                variation={currentSceneIndex}
+                profile={currentScene.profile}
+              />
+            </Suspense>
           </div>
           <img className="hero-en-logo" src="/brand-logo-en-orange.svg" alt="Studio Almost" />
           <div className="hero-message" key={graphicVariation}>
@@ -191,10 +79,15 @@ export default function Home() {
               className="hero-slogan"
               lang={currentSlogan.lang}
               aria-live="polite"
-            >{currentSlogan.text}</h1>
-            <div className="hero-sequence" aria-hidden="true">
-              <span>{String(currentSloganIndex + 1).padStart(2, "0")} / {String(heroSlogans.length).padStart(2, "0")}</span>
-              <span>{currentSlogan.label}</span>
+              aria-label={currentSlogan.text}
+            >
+              <LanguageDecryptedText text={currentSlogan.text} lang={currentSlogan.lang} />
+            </h1>
+            <div
+              className="hero-sequence"
+              aria-label={`${currentScene.mountain} 坐标：${currentScene.latitude}，${currentScene.longitude}`}
+            >
+              <span>{currentScene.latitude} · {currentScene.longitude} / {currentScene.mountain}</span>
             </div>
           </div>
         </div>
