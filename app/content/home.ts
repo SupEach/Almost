@@ -19,12 +19,19 @@ export const featuredProjects = [
   { no: "18", title: "零重力健身", en: "ZERO GRAVITY", art: "door", type: "商业和网站" },
 ];
 
-export const capabilityPeaks = [
-  { label: "项目阅读", height: 52 },
-  { label: "趋势感知", height: 43 },
-  { label: "审美判断", height: 58 },
-  { label: "设计执行", height: 47 },
-  { label: "团队管理", height: 54 },
+export const homeCategoryPanels = [
+  { label: "Branding", title: "品牌", slug: "branding-logos", art: "category-art-identity" },
+  { label: "Logos", title: "徽标", slug: "branding-logos", art: "art-park" },
+  { label: "Events", title: "活动", slug: "events-exhibitions", art: "category-art-events" },
+  { label: "Exhibitions", title: "展览", slug: "events-exhibitions", art: "art-door" },
+  { label: "Posters", title: "海报", slug: "posters-graphics", art: "category-art-posters" },
+  { label: "Graphics", title: "图形", slug: "posters-graphics", art: "art-poster" },
+  { label: "Books", title: "书籍", slug: "editorial-music", art: "category-art-editorial" },
+  { label: "Music", title: "音乐装帧", slug: "editorial-music", art: "art-sea" },
+  { label: "Packaging", title: "包装", slug: "packaging-products", art: "category-art-packaging" },
+  { label: "Products", title: "产品", slug: "packaging-products", art: "art-tea" },
+  { label: "Commercial", title: "商业", slug: "commercial-web", art: "category-art-digital" },
+  { label: "Web", title: "网站", slug: "commercial-web", art: "art-ui" },
 ];
 
 export const heroSlogans = [

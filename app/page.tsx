@@ -1,12 +1,17 @@
 "use client";
 
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { categories } from "./content/categories";
-import { featuredProjects, capabilityPeaks, heroSlogans } from "./content/home";
+import { featuredProjects, homeCategoryPanels, heroSlogans } from "./content/home";
 import { mountainScenes } from "./content/mountains";
+import AboutPoster from "./components/AboutPoster";
 import LanguageDecryptedText from "./components/LanguageDecryptedText";
+import StudioMeta from "./components/StudioMeta";
+import TechText from "./components/TechText";
+import VariableProximity from "./components/VariableProximity";
 
 const GenerativeCanvas = lazy(() => import("./components/GenerativeCanvas"));
+const heroWordmark = "/brand-logo-en-orange.svg";
+const defaultCategoryCaseCount = 18;
 
 function Arrow() { return <span aria-hidden="true">↗</span>; }
 
@@ -14,10 +19,10 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
   const [mountainButtonActive, setMountainButtonActive] = useState(false);
-  const [hoveredFeaturedCategory, setHoveredFeaturedCategory] = useState<string | null>(null);
-  const [hoveredFilterCategory, setHoveredFilterCategory] = useState<string | null>(null);
-  const [expandedCategory, setExpandedCategory] = useState(0);
+  const [previewedCategory, setPreviewedCategory] = useState<string | null>(null);
   const mountainButtonTimer = useRef<number | null>(null);
+  const heroStageRef = useRef<HTMLDivElement>(null);
+  const worksHeadingRef = useRef<HTMLHeadingElement>(null);
   const currentSceneIndex = graphicVariation % mountainScenes.length;
   const currentScene = mountainScenes[currentSceneIndex];
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
@@ -63,7 +68,7 @@ export default function Home() {
           <span className="hero-context-brand">STUDIO ALMOST, 不周山设计</span>
         </div>
 
-        <div className="hero-stage">
+        <div className="hero-stage" ref={heroStageRef}>
           <div className="hero-graphic" aria-hidden="true">
             <Suspense fallback={<div className="hero-canvas" aria-hidden="true" />}>
               <GenerativeCanvas
@@ -73,7 +78,22 @@ export default function Home() {
               />
             </Suspense>
           </div>
-          <img className="hero-en-logo" src="/brand-logo-en-orange.svg" alt="Studio Almost" />
+          <div className="hero-en-logo">
+            <TechText
+              artwork={heroWordmark}
+              drawingAreaRef={heroStageRef}
+              text="STUDIO ALMOST,"
+              reveal="letter"
+              dashLength={4}
+              dashGap={2}
+              specks={15}
+              intro="none"
+              clickKick
+              sweep={false}
+              guides={false}
+            />
+            <img src={heroWordmark} alt="Studio Almost" width={856} height={120} />
+          </div>
           <div className="hero-message" key={graphicVariation}>
             <h1
               className="hero-slogan"
@@ -93,24 +113,14 @@ export default function Home() {
         </div>
 
         <div className="hero-footer shell">
-          <div className="studio-meta">
-            <strong>SINCE 2014</strong>
-            <span>VISUAL DESIGN STUDIO · BASE FUZHOU</span>
-          </div>
-          <div className="hero-scroll">
-            <span aria-hidden="true">SCROLL TO EXPLORE</span>
-            <a href="#works" className="round-link" aria-label="向下查看精选作品">
-              <span aria-hidden="true">↓</span>
-            </a>
-          </div>
+          <StudioMeta />
+          <a href="#works" className="round-link" aria-label="向下查看精选作品">
+            <span aria-hidden="true">↓</span>
+          </a>
         </div>
       </section>
 
       <section className="works" id="works">
-        <div className="works-heading shell">
-          <h2>SELECTED WORKS</h2>
-        </div>
-
         <div className="featured-projects" aria-label="主推项目">
           <div className="featured-track">
             {[0, 1].map(group => (
@@ -119,8 +129,6 @@ export default function Home() {
                   <article
                     className="featured-card"
                     key={`${group}-${project.no}`}
-                    onMouseEnter={() => setHoveredFeaturedCategory(project.type)}
-                    onMouseLeave={() => setHoveredFeaturedCategory(null)}
                   >
                     <div className={`featured-visual art-${project.art}`}>
                       <span>{project.no}</span>
@@ -133,94 +141,51 @@ export default function Home() {
           </div>
         </div>
 
-        <nav className="filters shell" aria-label="作品分类入口">
-          {categories.map(category => {
-            const isActive = hoveredFeaturedCategory === category.type
-              || hoveredFilterCategory === category.type;
+        <div className="works-heading">
+          <h2 ref={worksHeadingRef}>
+            <VariableProximity
+              label="Selected Works"
+              fromFontVariationSettings="'wght' 500"
+              toFontVariationSettings="'wght' 900"
+              containerRef={worksHeadingRef}
+              radius={100}
+              style={{ whiteSpace: "nowrap" }}
+            />
+          </h2>
+        </div>
 
-            return (
-              <a
-                key={category.type}
-                className={isActive ? "active" : ""}
-                href={`/works/${category.slug}`}
-                onMouseEnter={() => setHoveredFilterCategory(category.type)}
-                onMouseLeave={() => setHoveredFilterCategory(null)}
-                onFocus={() => setHoveredFilterCategory(category.type)}
-                onBlur={() => setHoveredFilterCategory(null)}
-              >{isActive ? category.type : category.label.toUpperCase()}</a>
-            );
-          })}
-        </nav>
-
-        <nav
-          className="category-grid shell"
-          aria-label="六大作品分类"
-        >
-          {categories.map((category, index) => (
-            <a
-              className={`category-panel category-art-${category.art} ${expandedCategory === index ? "is-expanded" : ""}`}
-              href={`/works/${category.slug}`}
-              key={category.slug}
-              onMouseEnter={() => setExpandedCategory(index)}
-              onFocus={() => setExpandedCategory(index)}
-            >
-              <span className="category-number">0{index + 1}</span>
-              <span className="category-note">{category.note}</span>
-              <div className="category-copy">
-                <p>{category.type}</p>
-                <h3>{category.label}</h3>
-              </div>
-              <span className="category-enter">点击进入</span>
-            </a>
+        <nav className="category-grid" aria-label="十二类作品面板">
+          {homeCategoryPanels.map(panel => (
+            <article className="category-panel" key={panel.label}>
+              <button
+                className="category-preview"
+                type="button"
+                aria-label={`${panel.label} ${panel.title}，${defaultCategoryCaseCount} 个案例，预览图像`}
+                aria-pressed={previewedCategory === panel.label}
+                onClick={event => {
+                  const desktopHover = window.matchMedia("(width > 800px) and (hover: hover) and (pointer: fine)");
+                  const pointerType = (event.nativeEvent as PointerEvent).pointerType;
+                  if (event.detail > 0 && pointerType !== "touch" && desktopHover.matches) return;
+                  setPreviewedCategory(current => current === panel.label ? null : panel.label);
+                }}
+              >
+                <span className={`category-panel-art ${panel.art}`} aria-hidden="true" />
+                <span className="category-panel-title">{panel.label}</span>
+                <span className="category-panel-badges">
+                  <span className="category-panel-label">{panel.title}</span>
+                  <span className="category-panel-count">{defaultCategoryCaseCount}</span>
+                </span>
+              </button>
+              <a className="category-enter" href={`/works/${panel.slug}`} aria-label={`查看${panel.title}所属分类页`}>→</a>
+            </article>
           ))}
         </nav>
       </section>
 
       <section className="about" id="about">
         <div className="shell">
-          <header className="about-heading">
-            <p>ABOUT / 关于</p>
-            <h2>不完整，才是事情<br />开始变好的地方</h2>
-          </header>
-
-          <div className="experience-stats" aria-label="经验数字">
-            <div><span>DESIGN EXPERIENCE</span><strong>14<sup>年</sup></strong><p>设计经验</p></div>
-            <div><span>TEAM MANAGEMENT</span><strong>10<sup>年</sup></strong><p>团队管理</p></div>
-            <div><span>BRANDS SERVED</span><strong>50<sup>+</sup></strong><p>服务品牌</p></div>
-            <div><span>PROJECT DELIVERY</span><strong>300<sup>+</sup></strong><p>完整项目落地</p></div>
-          </div>
-
-          <div className="about-grid">
-            <div className="portrait" role="img" aria-label="薛譞杰人物肖像占位图">
-              <div className="portrait-mark">XJ</div>
-              <div className="portrait-caption"><span>PORTRAIT / 2026</span><span>FUZHOU, CN</span></div>
-            </div>
-            <div className="bio">
-              <p className="bio-label">BIOGRAPHY / 个人介绍</p>
-              <p className="lead">关于我和不周山</p>
-              <p>14 年设计经验、10 年以上项目与团队管理经验。我的工作横跨品牌、文化、商业与数字产品：从策略定义、创意提案，到供应商协同与最终落地，提供完整而稳定的视觉解决方案。</p>
-            </div>
-          </div>
-
-          <div className="capabilities">
-            <p className="sub-label">CAPABILITIES / 能力图谱</p>
-            <div className="mountain-chart" aria-label="项目阅读、趋势感知、审美判断、设计执行与团队管理能力山形图">
-              <i className="mountain-line" aria-hidden="true" />
-              <div className="mountain-points">
-                {capabilityPeaks.map((peak, index) => (
-                  <div className="mountain-point" key={peak.label} style={{"--height": `${peak.height}%`} as React.CSSProperties}>
-                    <b><span>0{index + 1}</span></b>
-                    <strong>{peak.label}</strong>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="clients">
-            <p className="sub-label">SELECTED COLLABORATIONS / 合作项目</p>
-            <div className="client-list"><span>李健</span><span>McDonald&apos;s</span><span>罗小黑战记</span><span>YESOUL</span><span>康姆士</span><span>福建省艺术馆</span><span>MAKERLIVE</span><span>王祖蓝工作室</span><span>GUOLAN</span><span>SEA CALLS</span></div>
-          </div>
+          <AboutPoster src="/about-poster-placeholder.svg" />
+          <h2 className="about-slogan">不完整，才是事情<br />开始变好的地方</h2>
         </div>
       </section>
 

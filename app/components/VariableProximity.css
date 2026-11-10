@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+.variable-proximity {
+  font-family: 'Montserrat', 'Kanit', sans-serif;
+}
+
+.variable-proximity-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

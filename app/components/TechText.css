@@ -1,0 +1,52 @@
+.tech-text {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.tech-text-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-en-logo .tech-text {
+  position: absolute;
+  inset: -80px -32px;
+  width: auto;
+  height: auto;
+  color: var(--brand-orange);
+}
+
+.hero-en-logo .tech-text-canvas {
+  position: absolute;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.hero-en-logo .tech-text[data-active] .tech-text-canvas {
+  visibility: visible;
+}
+
+.hero-en-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.hero-en-logo .tech-text[data-active] + img {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-en-logo .tech-text {
+    display: none;
+  }
+
+  .hero-en-logo .tech-text[data-active] + img {
+    opacity: 1;
+  }
+}

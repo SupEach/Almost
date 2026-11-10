@@ -21,7 +21,7 @@ The current interface combines a restrained black/off-white base with a strong o
 
 - Tailwind CSS v4 is loaded globally with `@import "tailwindcss"` and processed by `@tailwindcss/postcss`.
 - Current page markup does not use Tailwind utility-class composition. Presentation is implemented through handwritten global selectors in `app/globals.css`.
-- Five reusable root color variables exist. Spacing, typography, radius, shadow, and motion tokens are not centralized as CSS variables.
+- Five reusable root color variables exist. The Works section shares a local radius variable between featured cards and category previews.
 - `.shell` is the primary shared width/alignment utility.
 - Page-specific and artwork-specific selectors live in the same global stylesheet.
 
@@ -49,7 +49,7 @@ Do not introduce a second styling architecture without an explicit project decis
 | Category page | `#f4f3ef` |
 | Category archive block | `#0d0d0d` |
 | Contact | `#b8ff24` |
-| Works | Gradient: `#ff7824` → `#ff9a5d` → `#ffd5bb` → `#fff` |
+| Works | `#fff` |
 
 ### Text and dividers
 
@@ -63,7 +63,7 @@ Do not introduce a second styling architecture without an explicit project decis
 - Orange is the primary interaction accent.
 - Navigation underlines use dark ink.
 - The contact-pill remains white at rest, hover, and focus. Its selected state uses an orange surface with a one-shot internal white shine and no specular outer rim or glow. The control is text-only and has no trailing circular index.
-- Category filter hover/focus/active states change to orange.
+- Category panel arrows have an orange circular background during image preview and an orange outline on keyboard focus.
 
 There is no verified global disabled-state color.
 
@@ -81,6 +81,8 @@ Generic fallback: sans-serif
 
 Local font files exist for Kanit weights 400, 500, 600, and 700, all with `font-display: swap`.
 
+The `Selected Works` heading uses a local Latin subset of Montserrat with a variable weight axis.
+
 Current CSS also requests `font-weight: 650` for several major headings. No 650 font face is declared, so exact rendering between 600 and 700 is browser-dependent. A deliberate weight decision is **To confirm**.
 
 ### Verified type roles
@@ -88,8 +90,8 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 | Role / selector | Desktop value | Mobile value at `≤800px` |
 | --- | --- | --- |
 | Hero slogan | `clamp(42px, 6.1vw, 98px)`, weight 650, line-height `.92` | `clamp(38px, 12.6vw, 58px)`, line-height `.88` |
-| Works display heading | `clamp(70px, 10.4vw, 154px)`, weight 650, line-height `.86` | `clamp(56px, 18.4vw, 90px)` |
-| About display heading | `clamp(58px, 8.7vw, 132px)`, weight 600, line-height `.88` | `clamp(52px, 15vw, 78px)` |
+| Works display heading | `min(10.6cqi, 288px)`, weight 500, line-height `.8` | Same fluid single-line rule |
+| About slogan | `clamp(32px, 8vw, 132px)`, weight 600, line-height `1.02` | Same fluid two-line rule |
 | Category title | `clamp(72px, 11vw, 175px)`, weight 600, line-height `.78` | `clamp(60px, 19vw, 96px)` |
 | Contact display | `clamp(52px, 8.5vw, 130px)`, line-height `.92` | `16vw` |
 | Biography lead | `clamp(40px, 5vw, 72px)`, line-height `1` | `34px` |
@@ -98,7 +100,7 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 
 ### Typography behavior
 
-- Major display text uses negative tracking; the works heading uses slight positive tracking.
+- Major display text uses negative tracking. The `Selected Works` heading uses `-.04em`.
 - Hero slogan tracking changes by language through `:lang()` selectors.
 - The desktop hero slogan is single-line; mobile permits wrapping.
 - Metadata and navigation use small sizes with uppercase Latin text and wide tracking.
@@ -121,11 +123,11 @@ No named spacing scale is implemented. Values are hardcoded by selector, so a fo
 | Global shell gutter | `40px` each side | `18px` each side |
 | Global shell maximum | `1440px` | No separate maximum change |
 | Nav outer inset | `18px` sides, `14px` top | `10px` sides, `8px` top |
-| Works vertical padding | `150px` top / `170px` bottom | `100px` top / bottom |
-| About vertical padding | `170px` top / bottom | `100px` top / bottom |
-| Featured/category repeated gap | `8px` | `8px` |
+| Works vertical padding | `84px` top / `170px` bottom | `72px` top / `100px` bottom |
+| About vertical padding | `clamp(24px, 4vw, 64px)` top / `clamp(72px, 10vw, 150px)` bottom | Same fluid spacing |
+| Featured card gap | `8px` | `8px` |
 | Category-grid top margin | `180px` | `96px` |
-| About major section separation | commonly `170px` | commonly `110px` |
+| About poster to slogan gap | `clamp(42px, 7vw, 108px)` | Same fluid spacing |
 
 Do not infer a broader spacing scale from these values without a separate normalization decision.
 
@@ -149,12 +151,8 @@ At `≤800px`:
 
 | Area | Desktop | Mobile `≤800px` |
 | --- | --- | --- |
-| Category filters | 6 equal grid columns | Horizontal overflow row |
-| Category navigator | 6-panel flex accordion | Horizontal snap scroller; panels `min(82vw, 340px)` |
-| Experience stats | 4 columns | 2 columns |
-| About intro | `minmax(160px, 240px) 1fr` | `92px 1fr` |
-| Capability chart | 5 equal columns | 5 equal columns with vertical labels |
-| Client list | 5 columns | 2 columns |
+| Homepage category panel group | Full-width grid, 12 panels in 3 columns | Full-width grid, 12 panels in 2 columns |
+| About poster | Centered `3 / 4` sheet above the slogan | Same layout with a larger relative sheet width |
 | Category intro | `25% 1fr` | Block layout |
 
 The hero, navigation, category hero, and contact sections use viewport-height sizing with `svh`.
@@ -211,6 +209,7 @@ There is no current-route active state because primary navigation targets homepa
 
 ### Featured cards
 
+- The strip spans the width directly above the works heading, with a `clamp(4px, .55vw, 9px)` gap. The strip reserves the default card height and cards expand upward on hover.
 - Visual ratio: `3 / 4`.
 - Card radius: `16px`; inner visual radius: `15px`.
 - Desktop width: `(100vw - 72px) / 9`.
@@ -223,18 +222,10 @@ There is no current-route active state because primary navigation targets homepa
 
 ### Category panels
 
-- Desktop: six-panel flex accordion, height `clamp(510px, 52vw, 690px)`.
-- Collapsed width: `clamp(68px, 6.8vw, 102px)`.
-- Expanded panel consumes the remaining width after five collapsed panels and five gaps.
-- Radius: `24px`; mobile radius: `20px`.
-- Desktop expansion is driven by pointer hover or keyboard focus.
-- Mobile renders all panels as full visual cards in a horizontal snap scroller.
-
-### Category filters
-
-- Six equal desktop columns.
-- Default label is English; pointer/focus relationships may replace it with the Chinese category label.
-- Mobile presents a horizontally scrollable list.
+- Square white tiles span the page width. The `1px` column rules are split by row, with each segment inset `16px` from the top and bottom to align with the preview's corner radius. Horizontal rules between rows are inset to each tile's text edges. Each tile has a left-aligned English title and a lower row with a black Chinese label, white count pill, and `→` link.
+- The preview fades in across the entire tile with the featured card's `16px` corner radius as the title and badges fade out. The arrow gains a 36px orange circle inside its 44px link target. Tile dimensions stay fixed during preview.
+- A fine hover pointer reveals the preview on desktop. Compact and touch layouts toggle the preview by tapping the tile, and a keyboard user can toggle it with Enter or Space. A new tap selection closes the previous one.
+- Each count displays the provisional value `18`. The arrow links to the corresponding parent category page.
 
 ---
 
@@ -246,7 +237,7 @@ There is no current-route active state because primary navigation targets homepa
 - Open Graph image (`public/og.png`, declared as 1792×931 in metadata)
 - CSS-generated featured-card visuals
 - CSS-generated category-panel and category-hero visuals
-- CSS-generated portrait placeholder
+- Replaceable About poster SVG
 - Three.js hero canvas
 
 No real project-cover, hero, content-grid, image-pair, process-image, video, or caption module exists yet. Image ratios and delivery rules for real portfolio media are therefore **To confirm**.
@@ -254,7 +245,7 @@ No real project-cover, hero, content-grid, image-pair, process-image, video, or 
 Current rules that can be verified:
 
 - The featured placeholder ratio is `3 / 4`.
-- The portrait placeholder ratio is `3 / 4`.
+- The About poster ratio is `3 / 4`.
 - Artwork surfaces use intentional clipping through `overflow: hidden`.
 - Framework/Cloudflare image optimization is configured at worker level but not exercised by the current page components.
 
@@ -283,7 +274,7 @@ A reusable project-detail layout is **Unknown / not implemented**.
 
 - Global anchors inherit color and remove underlines.
 - Desktop navigation links show a dark animated underline on hover.
-- Category filters use orange on hover, focus-visible, or active state.
+- Category panel arrows sit on an orange circle while their panel preview is active.
 - The mail link uses a `2px` bottom border and a large arrow glyph.
 - The footer contains telephone and back-to-top links without a separate component style.
 
@@ -296,14 +287,14 @@ An explicit orange `2px` focus-visible outline with `4px` offset is implemented 
 - menu button;
 - round scroll link.
 
-The contact pill shares its hover and focus-visible visual state. Category filter links have a focus-visible color change. A single global focus treatment for all other interactive elements is not implemented.
+The contact pill shares its hover and focus-visible visual state. Category panel previews and arrows have a visible orange inset outline on keyboard focus.
 
 ### Buttons
 
 - `contact-pill`: rounded “下一座山” control with active, hover, focus, pressed, and 650ms internal white-shine states; its width is 116px desktop and 104px mobile while text sizing remains unchanged.
 - `menu-button`: text-only compact-layout navigation control.
-- `round-link`: circular orange anchor used for scroll navigation.
-- `category-enter`: pill-shaped text inside expanded category links.
+- `round-link`: circular orange anchor centered under the studio copy in the hero footer. The link scrolls to `#works`.
+- `category-enter`: 44px square arrow link inset from the lower-right corner by the panel's horizontal text padding and `8px` from the bottom. The arrow shares this position in both preview states.
 
 There is no generic reusable button component or variant API.
 
@@ -319,13 +310,12 @@ There is no generic reusable button component or variant API.
 
 ### Radius
 
-No radius tokens exist. Repeated values include:
+The Works section shares `--works-card-radius` (`16px`) between featured cards and category previews. Other repeated values include:
 
 - `18–21px` for navigation surfaces;
 - `16px` / `15px` for featured cards;
-- `24px` desktop / `20px` mobile for category panels;
+- Square corners for the homepage category panels;
 - `28px` desktop / `22px` mobile for category-page blocks;
-- `18px` desktop / `12px` mobile for the portrait;
 - `999px` or `50%` for pills and circles.
 
 ### Blur and shadow
@@ -343,12 +333,14 @@ No radius tokens exist. Repeated values include:
 | Role | Current implementation |
 | --- | --- |
 | Hero slogan entrance | `500ms`, cubic-bezier `(.22,.8,.3,1)`, fade/translate/blur |
+| Hero footer copy | Six keyword groups jitter one at a time with chromatic offsets. Pauses are `120–480ms` between groups and `450–900ms` between rounds. The loop runs while the copy is visible. |
+| Selected Works title | React Bits VariableProximity interpolates Montserrat weight from `500` to `900` with linear falloff within `100px` of the pointer. Letters ease back to the base weight as the pointer moves away. |
+| About paper poster | The sheet curls in the direction of the grabbed edge, casts a moving shadow, and flattens back at center on release. A flat drag interaction is available with reduced motion. |
 | Navigation underline | `250ms` |
 | Contact pill | mostly `250ms`; selected internal white shine `650ms` |
 | Featured-card expansion | `480ms`, cubic-bezier `(.2,.8,.2,1)` |
 | Featured track | `58s` linear infinite; `42s` mobile |
-| Category expansion | `720ms`, cubic-bezier `(.2,.75,.2,1)` |
-| Category art transform | `900ms`, same easing family |
+| Homepage category preview | `250ms` opacity transition |
 | Availability pulse | `1.5s` infinite |
 | Hero canvas | continuous requestAnimationFrame rotation |
 
@@ -360,6 +352,7 @@ At `prefers-reduced-motion: reduce`:
 
 - smooth scrolling is disabled;
 - CSS animation and transition are disabled globally.
+- The hero footer and Selected Works title display as static text.
 
 The Three.js hero loop is JavaScript-driven and does not currently check reduced-motion preference, so it continues to render. Whether it should stop is **To confirm**.
 
@@ -374,11 +367,8 @@ At `≤800px`, the implementation:
 - enlarges the English hero logo beyond viewport width while keeping the hero clipped;
 - allows the hero slogan to wrap;
 - reduces featured-card width and expansion;
-- changes filters and category panels to horizontal scrolling;
-- changes category panels from accordion presentation to card presentation;
-- changes statistics from four to two columns;
-- compresses the portrait/biography layout;
-- changes the client grid from five to two columns;
+- lays out the category panels in two columns and activates tap previews;
+- gives the About poster a larger relative width;
 - stacks category introductions;
 - adapts footer alignment and contact typography.
 
@@ -396,15 +386,14 @@ Verified current support:
 - decorative logo usage supplies empty alt text where an adjacent accessible label exists;
 - the hero English logo has `alt="Studio Almost"`;
 - the Three.js canvas wrapper is `aria-hidden`;
-- capability chart, project strip, category navigation, and experience stats have labels;
+- the project strip, category navigation, and About poster have labels;
+- the About poster can be lifted with Enter or Space;
 - reduced-motion CSS is present;
 - key navigation controls have explicit focus styling.
 
 Current limitations that are directly visible in source:
 
 - focus styling is not unified across all links;
-- the CSS-generated portrait is explicitly labeled as a placeholder;
-- mobile category behavior still retains pointer/focus-driven expanded state in component state, though layout makes every card full-width;
 - the JavaScript hero animation does not honor reduced-motion preference.
 
 Color-contrast conformance has not been measured and is **To confirm**.
@@ -421,7 +410,7 @@ Color-contrast conformance has not been measured and is **To confirm**.
 - Global gutters and maximum width: documented
 - Current grid structures: documented
 - Breakpoint policy: documented
-- Featured-card and portrait ratios: documented
+- Featured-card and About poster ratios: documented
 - Navigation behavior: documented
 - Common radius / shadow / blur patterns: documented
 - Motion durations and easing: documented

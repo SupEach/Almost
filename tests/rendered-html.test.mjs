@@ -22,6 +22,24 @@ test("homepage renders portfolio content and all category links", async () => {
   }
   assert.match(html, /MOUNT EVEREST/);
   assert.match(html, /We’re almost there/);
+  const studioMeta = html.match(/<p class="studio-meta" lang="en">([\s\S]*?)<\/p><a href="#works" class="round-link"/)?.[1];
+  assert.equal(studioMeta?.replace(/<[^>]*>/g, ""), "Since 2014, Visual Design Studio Founded By leVel, Based in FuZhou. Scroll To Explore More...");
+  assert.match(html, /class="featured-projects"[\s\S]*?class="works-heading"><h2>[\s\S]*?<span class="variable-proximity-label">Selected Works<\/span>/);
+  const about = html.match(/<section class="about" id="about">([\s\S]*?)<\/section>/)?.[1] ?? "";
+  assert.match(about, /class="about-poster"[\s\S]*?about-poster-placeholder\.svg[\s\S]*?class="about-slogan">不完整，才是事情<br\s*\/>开始变好的地方<\/h2>/);
+  assert.doesNotMatch(about, /ABOUT \/ 关于|DESIGN EXPERIENCE|BIOGRAPHY|CAPABILITIES|SELECTED COLLABORATIONS/);
+  assert.doesNotMatch(html, /aria-label="作品分类入口"/);
+  const panels = Array.from(html.matchAll(/<article class="category-panel">([\s\S]*?)<\/article>/g), match => match[1]);
+  assert.equal(panels.length, 12);
+  assert.deepEqual(panels.map(panel => panel.match(/class="category-panel-title">([^<]+)/)?.[1]), [
+    "Branding", "Logos", "Events", "Exhibitions", "Posters", "Graphics",
+    "Books", "Music", "Packaging", "Products", "Commercial", "Web",
+  ]);
+  for (const panel of panels) {
+    assert.match(panel, /aria-pressed="false"/);
+    assert.match(panel, /class="category-panel-count">18<\/span>/);
+    assert.match(panel, /class="category-enter" href="\/works\/[^"]+"[^>]*>→<\/a>/);
+  }
 });
 
 for (const [slug, label] of [

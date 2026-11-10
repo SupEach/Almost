@@ -4,7 +4,7 @@
 >
 > Keep it concise and current. Replace obsolete information instead of maintaining a chronological development diary.
 
-**Last updated:** 2026-09-15
+**Last updated:** 2026-11-10
 **Audit basis:** Local preview recovery, code modularization, type/lint checks, and production-rendered route tests.
 
 ---
@@ -66,6 +66,8 @@ Build and development:
 
 ## 3. Current Routes
 
+Use the [page and module naming reference](PAGE-MODULE-MAP.zh-CN.md) when describing design changes or marking screenshots.
+
 | Route | Current implementation |
 | --- | --- |
 | `/` | Home page containing hero, selected works, category navigation, about, and contact sections. |
@@ -100,13 +102,14 @@ Current sections and behavior:
 
 - fixed global navigation with desktop anchor links and a mobile menu;
 - hero with a Three.js generative wireframe graphic driven by 36 deterministic, peak-preserving terrain profiles: 12 based on well-known real mountains and 24 original mountain variations;
-- the orange `STUDIO ALMOST,` hero SVG is rendered in its original static form without a distortion effect;
+- the orange `STUDIO ALMOST,` hero wordmark uses its original SVG contours for TechText interaction. Hover reveals a dashed outline, selection frame, size label, and specks per glyph. Dragging keeps the full glyph inside the hero, then springs it back on release. Clicking sends a ripple through adjacent glyphs. The original SVG is shown at rest and with reduced motion;
 - hero quotation credits display the author and nationality only, without era or century details;
 - the “下一座山” control is 150% of its former width while retaining its existing text size; its unselected and hover states remain white, while the selected orange surface uses a restrained one-shot white shine without an outer rim or glow;
 - six rotating multilingual slogans selected by the “下一座山” control across 36 mountain scenes; each slogan enters with a brief center-out decryption effect whose temporary characters are restricted to the matching writing system, and all names and coordinates share the same concise presentation without an origin suffix;
-- continuously scrolling featured-work strip with 18 inline records duplicated for seamless motion;
-- six category filter links and a six-panel category navigator;
-- about, experience, biography, capability chart, and client sections;
+- centered hero footer combining the studio introduction and browse prompt, with the orange down arrow below. `Since 2014`, `Visual Design`, `leVel`, `FuZhou`, `Scroll`, and `Explore More` take turns jittering with chromatic offsets in a fast randomized loop;
+- continuously scrolling featured-work strip with 18 inline records duplicated for seamless motion, directly above the single-line `Selected Works` heading. Its Montserrat letters gain weight as the pointer approaches and ease back to Medium as it moves away;
+- a white Works section with a full-width grid of twelve category panels below the featured strip. Row rules are inset horizontally and column rules stop at each panel's `16px` corner zones. Each panel has an English title, Chinese label, an `18` case-count placeholder, and an inset arrow to the existing parent category page. Desktop hover or compact-layout tap reveals the full-tile visual with the same `16px` corner radius as the featured cards and gives the arrow an orange circular background;
+- About section with a draggable paper poster above the original Chinese slogan;
 - contact footer with email, telephone, and back-to-top links.
 
 #### Locked Home baseline
@@ -115,7 +118,7 @@ The current Home page is the approved baseline as of 2026-08-20.
 
 - Tasks that do not explicitly request a Home-page change must preserve `app/page.tsx` and Home-specific selectors in `app/globals.css`.
 - Changes to shared styles or reusable UI must be checked to ensure they do not alter the Home page unless the user explicitly requests that effect.
-- The locked hero/navigation baseline includes: logo left, desktop links centered, the enlarged white-default “下一座山” control with an internal white selected-state shine at the right edge, centered static orange hero logo, language-matched center-out slogan decryption, centered slogan/coordinates, 36 mountain scenes without origin suffixes, nationality-only quotation credits, and the current footer alignment.
+- The locked hero/navigation baseline includes: logo left, desktop links centered, the enlarged white-default “下一座山” control with an internal white selected-state shine at the right edge, orange hero logo with pointer-driven TechText interaction, language-matched center-out slogan decryption, centered slogan/coordinates, 36 mountain scenes without origin suffixes, nationality-only quotation credits, and a centered hero footer.
 - The sections and content inventory listed above are part of this baseline; future changes require an explicit Home-page instruction.
 
 ### Work browsing
@@ -123,6 +126,7 @@ The current Home page is the approved baseline as of 2026-08-20.
 **Status:** Partially implemented on the homepage.
 
 - Category links route to six category landing pages.
+- The twelve homepage panels split each category into two visual entries. Their arrows use the same six landing routes.
 - Category pages currently end with a `PROJECT ARCHIVE` placeholder stating that project content will be added later.
 - There is no populated archive, category filtering of project records, or standalone work index.
 
@@ -137,7 +141,7 @@ The current Home page is the approved baseline as of 2026-08-20.
 
 **Status:** About content is implemented as a homepage section.
 
-- The current portrait is a CSS-generated placeholder.
+- About currently displays a draggable `3 / 4` poster and the original Chinese slogan. The paper curls and reveals its reverse while pulled, then returns to center on release. The replaceable geometric print is `public/about-poster-placeholder.svg`.
 - A PDF exists under `Resume/`, but no application link references it.
 - Resume download behavior is **Unknown / To confirm**.
 
@@ -151,6 +155,9 @@ Content lives under app/content and animation components under app/components. C
 - `Home` in `app/page.tsx` — the complete homepage.
 - `GenerativeCanvas` in `app/components/GenerativeCanvas.tsx` — lazy-loaded Three.js scene with resize guards, cleanup, and WebGL initialization failure isolation.
 - `LanguageDecryptedText` in `app/components/LanguageDecryptedText.tsx` — language-specific slogan animation.
+- `VariableProximity` in `app/components/VariableProximity.jsx` — pointer-driven variable typography for the Selected Works heading.
+- `AboutPoster` in `app/components/AboutPoster.tsx` — draggable paper with a lazily loaded Three.js scene and a draggable flat fallback.
+- `TechText` in `app/components/TechText.jsx` — React Bits component adapted to animate the hero wordmark's original SVG paths.
 - `Arrow` in `app/page.tsx` — homepage-only arrow glyph helper.
 - `CategoryPage` in `app/works/[slug]/page.tsx` — shared template for all six category slugs.
 - `app/chatgpt-auth.ts` — reusable hosting-header authentication helpers; no current page imports them.
@@ -176,7 +183,7 @@ All current portfolio and profile content is hardcoded in TypeScript:
 
 - `categories` in app/content/categories.ts — six shared category records with a safe slug lookup;
 - `featuredProjects` — 18 featured records;
-- `capabilityPeaks` — five capability values;
+- `homeCategoryPanels` — 12 homepage panel labels, preview artwork keys, and parent category links;
 - `heroSlogans` — six language variants;
 - `mountainScenes` — 36 coordinate, quotation, and terrain-profile records (12 real mountains plus 24 original mountain variations);
 - Category introductions and labels now share the same category source as Home.
@@ -203,9 +210,9 @@ Current structural facts:
 Verified asset behavior:
 
 - The Chinese logo, orange English logo, and main circle graphic in `public/` are byte-identical copies of files in `Brand Assets/`.
-- Application code currently references the Chinese logo, orange English logo, Open Graph PNG, and four Kanit font files.
+- Application code currently references the Chinese logo, orange English logo, Open Graph PNG, the About poster SVG, four Kanit font files, and Montserrat Latin.
 - `brand-logo-en-green.svg`, `main-graphic-circle.svg`, `file.svg`, `globe.svg`, `window.svg`, `favicon.svg`, and the resume PDF have no direct reference in current application source.
-- Current project/card visuals and the portrait are generated with CSS rather than portfolio image files.
+- Current project/card visuals are generated with CSS. The About poster uses an SVG placeholder.
 - Image optimization support exists in `worker/index.ts`, but current page code does not use the framework image component.
 
 ---
@@ -215,7 +222,7 @@ Verified asset behavior:
 - One width breakpoint is implemented: `@media (max-width: 800px)`.
 - There are no separate tablet, desktop, or large-desktop media-query breakpoints.
 - Above 800px, layouts rely on CSS grid/flex behavior, `clamp()`, viewport units, and a shared 1440px maximum shell.
-- At 800px and below, navigation becomes menu-driven; featured cards narrow; category panels become a horizontal snap scroller; statistics and client grids reduce columns; and typography/layout values adapt.
+- At 800px and below, navigation becomes menu-driven, featured cards narrow, and the category panel grid switches from three to two columns with tap previews.
 - A `prefers-reduced-motion: reduce` query disables animation and transitions and removes smooth scrolling.
 
 ---
@@ -251,7 +258,7 @@ Verified asset behavior:
 
 - Should the implemented English category labels be changed to the canonical project taxonomy?
 - What is the approved project-detail route and content schema?
-- Which real portfolio assets replace the current CSS-generated project visuals and portrait?
+- Which real portfolio assets replace the current CSS-generated project visuals and About poster?
 - Should the existing resume PDF be exposed through the site?
 - What is the intended source-to-public asset publishing workflow?
 - What are the current production URL and Sites access policy?

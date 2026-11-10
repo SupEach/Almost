@@ -1,5 +1,7 @@
 # Studio Almost 个人网站开发与任务协作指南
 
+截图标注和日常修改指令可查阅[页面与模块命名说明](PAGE-MODULE-MAP.zh-CN.md)。
+
 核对日期：2026-09-15。适用目录：`C:\Projects\Almost`。
 
 本指南依据「00 — Project Rules / Architecture」的职责逻辑、项目三份规则文档与当前源代码编写。任务命名、开发顺序、指令模板属于工作建议，不代表已经创建了对应任务或实现了新功能。本次只新增指南。
@@ -98,11 +100,11 @@
 | 引语与品牌说明 | `.hero-context`、`.hero-quote`、`.hero-context-brand` | 随山体切换引语与署名 |
 | 主视觉舞台 | `.hero-stage` | 山体、英文标志和标语的叠放区域 |
 | 山体画布 | `.hero-graphic`、`.hero-canvas` | `GenerativeCanvas` 所在区域 |
-| 橙色英文标志 | `.hero-en-logo` | 静态 `STUDIO ALMOST,` SVG |
+| 橙色英文标志 | `.hero-en-logo` | `STUDIO ALMOST,` SVG，支持 TechText 逐字交互 |
 | 多语言标语 | `.hero-message`、`.hero-slogan` | `LanguageDecryptedText` |
 | 山名及坐标 | `.hero-sequence` | 当前山体名称、经纬度 |
-| 首屏底部信息 | `.hero-footer`、`.studio-meta` | 工作室年份、类型与所在地 |
-| 向下浏览入口 | `.hero-scroll`、`.round-link` | 跳到精选作品区 |
+| 首屏底部信息 | `.hero-footer`、`.studio-meta` | 居中的工作室介绍和浏览提示，六个关键词随机错位抖动 |
+| 向下浏览入口 | `.round-link` | 位于首屏底栏文案下方，跳到精选作品区 |
 
 当前山体共 36 组：12 组以真实山峰为基础、24 组原创变化；标语六种语言循环。修改山名、引语、坐标主要看数据文件；修改地形算法看画布组件；修改排列与大小看页面和 CSS。
 
@@ -111,15 +113,14 @@
 | 建议沟通名称 | 当前选择器 | 实际功能 |
 | --- | --- | --- |
 | 精选作品区 | `.works`、`#works` | 整个作品展示区域 |
-| 精选作品标题 | `.works-heading` | SELECTED WORKS |
-| 横向精选条带 | `.featured-projects`、`.featured-track` | 连续滚动作品展示 |
+| 横向精选条带 | `.featured-projects`、`.featured-track` | 位于标题上方，连续滚动展示精选作品 |
+| 精选作品标题 | `.works-heading`、`VariableProximity` | 条带下方的单行 `Selected Works`，使用 Montserrat，指针靠近时逐字增重 |
 | 滚动内容组 | `.featured-set` | 18 条记录重复渲染两组，用于无缝滚动 |
 | 精选作品卡片 | `.featured-card` | 页面内 article，当前没有详情链接 |
 | 卡片画面 | `.featured-visual`、`.art-*` | CSS 占位图形与编号、英文标题 |
-| 分类文字入口 | `.filters` | 六个分类链接与悬停联动，没有实际筛选项目列表 |
-| 六分类导航 | `.category-grid` | 桌面手风琴，移动端横向吸附滚动 |
-| 分类面板 | `.category-panel`、`.category-art-*` | 点击进入对应分类页 |
-| 分类面板信息 | `.category-number`、`.category-note`、`.category-copy`、`.category-enter` | 编号、说明、标题和进入提示 |
+| 十二类面板组 | `.category-grid` | 全宽白底网格，桌面三列，窄屏两列，横向分隔线与竖线留空 |
+| 分类图像预览 | `.category-preview`、`.category-panel-art` | 桌面悬停或手机轻点时，图像铺满面板，采用精选卡片的 `16px` 圆角，箭头显示橙色圆形底 |
+| 分类面板信息 | `.category-panel-title`、`.category-panel-badges`、`.category-enter` | 英文标题、中文标签、案例数和进入所属分类页的箭头 |
 
 因此，“把筛选修好”和“把分类入口改好”是不同需求。如果想点击分类后筛选当前作品，需要明确这是新增行为。
 
@@ -127,22 +128,16 @@
 
 | 建议沟通名称 | 当前选择器 | 内容 |
 | --- | --- | --- |
-| 关于区 | `.about`、`#about` | 首页关于模块 |
-| 关于标题 | `.about-heading` | ABOUT / 关于与中文标题 |
-| 经验数字 | `.experience-stats` | 设计经验、团队管理、服务品牌、项目落地 |
-| 肖像与个人介绍布局 | `.about-grid` | 左侧肖像，右侧介绍 |
-| 肖像占位 | `.portrait`、`.portrait-mark`、`.portrait-caption` | CSS 占位肖像，尚未使用真实照片 |
-| 个人介绍 | `.bio`、`.bio-label`、`.lead` | 简介标签、大标题与正文 |
-| 能力图谱 | `.capabilities`、`.mountain-chart` | 五项能力山形图 |
-| 能力节点 | `.mountain-line`、`.mountain-points`、`.mountain-point` | 山形线与各项节点 |
-| 合作项目 | `.clients`、`.client-list` | 现有合作名称列表 |
+| 关于区 | `.about`、`#about` | 可拖动纸质海报与原中文标语 |
+| 关于区纸质海报 | `.about-poster-stage`、`AboutPoster` | `src` 指向可替换的 `3:4` 海报图稿，拖动时卷曲和投影 |
+| 关于区标语 | `.about-slogan` | 「不完整，才是事情开始变好的地方」 |
 | 联系页脚 | `.contact`、`#contact`、`.contact-inner` | 全屏收尾区 |
 | 接案状态 | `.availability` | AVAILABLE FOR SELECTED PROJECTS |
 | 联系主标题 | `.contact h2` | 中文两行标题 |
 | 邮件入口 | `.mail-link` | mailto 链接与 Arrow |
 | 底部信息行 | `.footer-row` | 版权、电话、回到顶部 |
 
-个人介绍、经验数字、合作列表、联系信息目前仍有内容直接写在 `app/page.tsx`。不能假设所有文字都已转移到 `app/content/home.ts`。
+关于区标语、海报图稿路径和联系信息写在 `app/page.tsx`。
 
 ### 3.5 分类页区块
 
@@ -163,7 +158,6 @@
 | --- | --- | --- |
 | [categories.ts](C:/Projects/Almost/app/content/categories.ts)：`categories`、`getCategory` | 分类名称、slug、介绍、图形类型和安全查找 | 分类统一、介绍调整 |
 | [home.ts](C:/Projects/Almost/app/content/home.ts)：`featuredProjects` | 18 条精选记录，字段为 no/title/en/art/type | 卡片顺序与已有字段调整 |
-| 同文件：`capabilityPeaks` | 五项能力名称与高度 | 能力数据调整 |
 | 同文件：`heroSlogans` | 六种语言和对应标语 | 标语文案调整 |
 | [mountains.ts](C:/Projects/Almost/app/content/mountains.ts)：`mountainScenes`、`MountainProfile` | 山体记录与地形参数类型 | 山体场景内容调整 |
 | [globals.css](C:/Projects/Almost/app/globals.css) | 全站手写 CSS、字体、色彩变量、动效和响应式 | 视觉规则与局部样式 |
@@ -369,9 +363,9 @@ Worktree 是 Git 提供的独立代码检出目录，可用于并行开发；它
 推荐按“保留 / 修改 / 验收”表达：
 
 ```text
-保留：当前分类面板比例、圆角、标题位置和点击路径。
-修改：仅缩小移动端分类说明文字，当前基础上减小 2px。
-验收：390px 下说明完整可读；标题和按钮位置不发生变化。
+范围：手机宽度下的分类面板中文标签。
+修改：标签文字在当前基础上缩小 2px。
+验收：390px 下中文完整可读，案例数与进入箭头之间有清晰间距。
 本次明确取代上一轮关于说明字号的意见，其余决定继续有效。
 ```
 
@@ -398,9 +392,9 @@ Worktree 是 Git 提供的独立代码检出目录，可用于并行开发；它
 - 现有五个根色彩变量为 `--ink`、`--paper`、`--muted`、`--line`、`--brand-orange`。间距和动画时间尚未全面变量化，不要假设已有完整 token 系统。
 - 共用 `.shell` 最大宽度 1440px；桌面两侧通常 40px，紧凑布局两侧 18px。
 - 当前宽度断点为 800px。测试平板、桌面和大屏，并不意味着必须新增三个断点。
-- 精选占位卡片和肖像现有比例为 3:4。真实详情图片比例尚未建立规则，应按作品内容另行确定。
-- 当前导航已有半透明、圆角和模糊效果，作品区已有渐变。规则限制的是未经要求引入新视觉语言，也不能借规则自动删除已有设计。
-- 橙色英文 Hero 标志保持静态；标语解密和切山行为已有明确方向。
+- 精选占位卡片和关于区海报的比例为 3:4。真实详情图片比例尚未建立规则，应按作品内容另行确定。
+- 顶部导航沿用半透明、圆角和模糊效果，作品区使用统一白底。
+- 橙色英文 Hero 标志静止时显示原始 SVG，交互时呈现 TechText 描边、拖动回弹和点击弹跳。标语解密与切山分别对应各自的模块。
 - CSS 已支持减少动态效果，标语组件也检查相关偏好；Three.js 画布尚未检查该偏好。若要完善，应明确成为一个修复任务。
 
 ## 8. 从现在推进到完整作品集的建议顺序
@@ -484,7 +478,7 @@ pnpm dev
 
 ### 9.3 当前已记录的限制
 
-- 作品媒体与肖像主要是占位表现；真实档案、详情页尚未接入。
+- 作品媒体与关于区海报为占位图，真实档案和详情页尚未接入。
 - 分类标准名与 UI 标签仍需决定。
 - 未知分类有页面内回退；项目状态后段记录其仍返回 HTTP 200，前段的状态待确认表述未完全同步。后续路由任务应实际复测再统一文档。
 - 简历没有接入；正式 URL 与发布状态待确认。
