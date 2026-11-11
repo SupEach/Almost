@@ -39,6 +39,7 @@ const strengthAt = (distance, radius, falloff) => {
 /**
  * @typedef {import('react').ComponentPropsWithoutRef<'span'> & {
  *   label?: string,
+ *   visualLabel?: string,
  *   fromFontVariationSettings?: string,
  *   toFontVariationSettings?: string,
  *   containerRef?: import('react').RefObject<HTMLElement | null>,
@@ -56,6 +57,7 @@ const strengthAt = (distance, radius, falloff) => {
 const VariableProximity = forwardRef(/** @param {VariableProximityProps} props */ (props, ref) => {
   const {
     label = '',
+    visualLabel = label,
     fromFontVariationSettings = "'wght' 400, 'opsz' 9",
     toFontVariationSettings = "'wght' 1000, 'opsz' 40",
     containerRef,
@@ -152,7 +154,7 @@ const VariableProximity = forwardRef(/** @param {VariableProximityProps} props *
       cancelAnimationFrame(frame);
       observer?.disconnect();
     };
-  }, [label, fromFontVariationSettings, fontSize, noWrap]);
+  }, [visualLabel, fromFontVariationSettings, fontSize, noWrap]);
 
   useEffect(() => {
     const { pointer, levels, targets } = stateRef.current;
@@ -388,11 +390,11 @@ const VariableProximity = forwardRef(/** @param {VariableProximityProps} props *
     lift,
     idleWave,
     fontSize,
-    label,
+    visualLabel,
     lineStarts
   ]);
 
-  const words = label.split(' ');
+  const words = visualLabel.split(' ');
   const breakSet = new Set(!noWrap && lineStarts ? lineStarts.split(',').map(Number) : []);
   let letterIndex = 0;
 
@@ -418,6 +420,7 @@ const VariableProximity = forwardRef(/** @param {VariableProximityProps} props *
               return (
                 <span
                   key={currentLetterIndex}
+                  data-parenthesis={/[()（）]/.test(letter) ? '' : undefined}
                   ref={el => {
                     letterRefs.current[currentLetterIndex] = el;
                   }}

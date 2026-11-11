@@ -4,7 +4,7 @@
 >
 > Keep it concise and current. Replace obsolete information instead of maintaining a chronological development diary.
 
-**Last updated:** 2026-11-10
+**Last updated:** 2026-11-11
 **Audit basis:** Local preview recovery, code modularization, type/lint checks, and production-rendered route tests.
 
 ---
@@ -49,6 +49,7 @@ Runtime:
 
 - `react` / `react-dom` `19.2.6`
 - `three` `0.128.0`
+- `motion` `14.10.0`, `@hugeicons/react` `1.1.10`, and `@hugeicons/core-free-icons` `4.4.0` for the contact control
 - `simplex-noise` `2.4.0`
 - `drizzle-orm` `0.45.2`
 
@@ -107,10 +108,10 @@ Current sections and behavior:
 - the “下一座山” control is 150% of its former width while retaining its existing text size; its unselected and hover states remain white, while the selected orange surface uses a restrained one-shot white shine without an outer rim or glow;
 - six rotating multilingual slogans selected by the “下一座山” control across 36 mountain scenes; each slogan enters with a brief center-out decryption effect whose temporary characters are restricted to the matching writing system, and all names and coordinates share the same concise presentation without an origin suffix;
 - centered hero footer combining the studio introduction and browse prompt, with the orange down arrow below. `Since 2014`, `Visual Design`, `leVel`, `FuZhou`, `Scroll`, and `Explore More` take turns jittering with chromatic offsets in a fast randomized loop;
-- continuously scrolling featured-work strip with 18 inline records duplicated for seamless motion, directly above the single-line `Selected Works` heading. Its Montserrat letters gain weight as the pointer approaches and ease back to Medium as it moves away;
+- continuously scrolling featured-work strip with 18 inline records duplicated for seamless motion, above the single-line `（Selected Works）` heading. The heading reaches `156px` on desktop, shares the English hero slogan's tracking, and uses Montserrat Bold. Its parentheses are `90%` of the title size and gain weight alongside the letters as the pointer approaches;
 - a white Works section with a full-width grid of twelve category panels below the featured strip. Row rules are inset horizontally and column rules stop at each panel's `16px` corner zones. Each panel has an English title, Chinese label, an `18` case-count placeholder, and an inset arrow to the existing parent category page. Desktop hover or compact-layout tap reveals the full-tile visual with the same `16px` corner radius as the featured cards and gives the arrow an orange circular background;
-- About section with a draggable paper poster above the original Chinese slogan;
-- contact footer with email, telephone, and back-to-top links.
+- white About section that fills one desktop viewport, with a draggable paper poster layered over the English slogan and orange banner;
+- compact white contact footer with the email link and a frosted orange “一键联系” sling control that opens a draft to the same address;
 
 #### Locked Home baseline
 
@@ -141,7 +142,7 @@ The current Home page is the approved baseline as of 2026-08-20.
 
 **Status:** About content is implemented as a homepage section.
 
-- About currently displays a draggable `3 / 4` poster and the original Chinese slogan. The paper curls and reveals its reverse while pulled, then returns to center on release. The replaceable geometric print is `public/about-poster-placeholder.svg`.
+- The desktop About section is `100svh`. Its base layer pairs the centered `Complete Incomplete` slogan with an orange image that shares the homepage navigation width. The `3 / 4` paper poster starts at the right of the banner on desktop and above the title on compact screens. The paper bends and tilts with the drag. On release, it keeps its new position and angle while the curl and depth gradually settle. The print and banner use `public/about-poster-placeholder.svg` and `public/about-image-placeholder.svg` respectively.
 - A PDF exists under `Resume/`, but no application link references it.
 - Resume download behavior is **Unknown / To confirm**.
 
@@ -157,8 +158,8 @@ Content lives under app/content and animation components under app/components. C
 - `LanguageDecryptedText` in `app/components/LanguageDecryptedText.tsx` — language-specific slogan animation.
 - `VariableProximity` in `app/components/VariableProximity.jsx` — pointer-driven variable typography for the Selected Works heading.
 - `AboutPoster` in `app/components/AboutPoster.tsx` — draggable paper with a lazily loaded Three.js scene and a draggable flat fallback.
+- `SlingButton` in `app/components/SlingButton.jsx` — React Bits contact control with pointer and keyboard activation and a directional burst on an armed release.
 - `TechText` in `app/components/TechText.jsx` — React Bits component adapted to animate the hero wordmark's original SVG paths.
-- `Arrow` in `app/page.tsx` — homepage-only arrow glyph helper.
 - `CategoryPage` in `app/works/[slug]/page.tsx` — shared template for all six category slugs.
 - `app/chatgpt-auth.ts` — reusable hosting-header authentication helpers; no current page imports them.
 
@@ -212,7 +213,7 @@ Verified asset behavior:
 - The Chinese logo, orange English logo, and main circle graphic in `public/` are byte-identical copies of files in `Brand Assets/`.
 - Application code currently references the Chinese logo, orange English logo, Open Graph PNG, the About poster SVG, four Kanit font files, and Montserrat Latin.
 - `brand-logo-en-green.svg`, `main-graphic-circle.svg`, `file.svg`, `globe.svg`, `window.svg`, `favicon.svg`, and the resume PDF have no direct reference in current application source.
-- Current project/card visuals are generated with CSS. The About poster uses an SVG placeholder.
+- Current project/card visuals are generated with CSS. The About poster and banner use separate SVG placeholders.
 - Image optimization support exists in `worker/index.ts`, but current page code does not use the framework image component.
 
 ---

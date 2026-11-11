@@ -1,10 +1,13 @@
 "use client";
 
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import MailSend01Icon from "@hugeicons/core-free-icons/MailSend01Icon";
 import { featuredProjects, homeCategoryPanels, heroSlogans } from "./content/home";
 import { mountainScenes } from "./content/mountains";
 import AboutPoster from "./components/AboutPoster";
 import LanguageDecryptedText from "./components/LanguageDecryptedText";
+import SlingButton from "./components/SlingButton";
 import StudioMeta from "./components/StudioMeta";
 import TechText from "./components/TechText";
 import VariableProximity from "./components/VariableProximity";
@@ -12,8 +15,8 @@ import VariableProximity from "./components/VariableProximity";
 const GenerativeCanvas = lazy(() => import("./components/GenerativeCanvas"));
 const heroWordmark = "/brand-logo-en-orange.svg";
 const defaultCategoryCaseCount = 18;
-
-function Arrow() { return <span aria-hidden="true">↗</span>; }
+const contactEmail = "levelfoto@gmail.com";
+const contactHref = `mailto:${contactEmail}`;
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +42,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main>
+    <main className="home">
       <nav className="nav shell">
         <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
           <img src="/brand-logo-cn.svg" alt="" />
@@ -144,8 +147,9 @@ export default function Home() {
         <div className="works-heading">
           <h2 ref={worksHeadingRef}>
             <VariableProximity
-              label="Selected Works"
-              fromFontVariationSettings="'wght' 500"
+              label="（Selected Works）"
+              visualLabel="(Selected Works)"
+              fromFontVariationSettings="'wght' 700"
               toFontVariationSettings="'wght' 900"
               containerRef={worksHeadingRef}
               radius={100}
@@ -183,23 +187,30 @@ export default function Home() {
       </section>
 
       <section className="about" id="about">
-        <div className="shell">
-          <AboutPoster src="/about-poster-placeholder.svg" />
-          <h2 className="about-slogan">不完整，才是事情<br />开始变好的地方</h2>
-        </div>
+        <AboutPoster src="/about-poster-placeholder.svg">
+          <h2 className="about-slogan shell" lang="en">Complete Incomplete</h2>
+          <div className="about-image" aria-hidden="true" />
+        </AboutPoster>
       </section>
 
       <footer className="contact" id="contact">
         <div className="shell contact-inner">
-          <p className="index">03 — CONTACT</p>
-          <div>
-            <p className="availability"><i /> AVAILABLE FOR SELECTED PROJECTS</p>
-            <h2>让我们创造<br /><span>值得被记住的作品。</span></h2>
-          </div>
-          <a className="mail-link" href="mailto:levelfoto@gmail.com"><span>levelfoto@gmail.com</span><Arrow /></a>
-          <div className="footer-row">
-            <span>© 2026 XUE XUANJIE</span>
-            <div><a href="tel:+8613605953828">+86 136 0595 3828</a><a href="#home">回到顶部 ↑</a></div>
+          <div className="contact-row">
+            <a className="mail-link" href={contactHref}>{contactEmail}</a>
+            <SlingButton
+              className="contact-sling"
+              label="一键联系"
+              ariaLabel="一键联系"
+              hint="点击或按回车打开邮件草稿，也可拉动图标后松手。"
+              padColor="var(--brand-orange)"
+              accentColor="var(--brand-orange)"
+              iconColor="var(--ink)"
+              wellColor="color-mix(in srgb, var(--brand-orange) 13%, white)"
+              bandColor="color-mix(in srgb, var(--brand-orange) 45%, white)"
+              onSend={() => { window.location.href = contactHref; }}
+            >
+              <HugeiconsIcon icon={MailSend01Icon} size={24} strokeWidth={2.2} aria-hidden="true" />
+            </SlingButton>
           </div>
         </div>
       </footer>

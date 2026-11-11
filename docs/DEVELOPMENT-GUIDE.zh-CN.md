@@ -114,7 +114,7 @@
 | --- | --- | --- |
 | 精选作品区 | `.works`、`#works` | 整个作品展示区域 |
 | 横向精选条带 | `.featured-projects`、`.featured-track` | 位于标题上方，连续滚动展示精选作品 |
-| 精选作品标题 | `.works-heading`、`VariableProximity` | 条带下方的单行 `Selected Works`，使用 Montserrat，指针靠近时逐字增重 |
+| 精选作品标题 | `.works-heading`、`VariableProximity` | 条带下方的单行 `（Selected Works）`，使用 Montserrat Bold，括号为标题字号的 90%，和字母共用逐字增重效果 |
 | 滚动内容组 | `.featured-set` | 18 条记录重复渲染两组，用于无缝滚动 |
 | 精选作品卡片 | `.featured-card` | 页面内 article，当前没有详情链接 |
 | 卡片画面 | `.featured-visual`、`.art-*` | CSS 占位图形与编号、英文标题 |
@@ -128,14 +128,13 @@
 
 | 建议沟通名称 | 当前选择器 | 内容 |
 | --- | --- | --- |
-| 关于区 | `.about`、`#about` | 可拖动纸质海报与原中文标语 |
-| 关于区纸质海报 | `.about-poster-stage`、`AboutPoster` | `src` 指向可替换的 `3:4` 海报图稿，拖动时卷曲和投影 |
-| 关于区标语 | `.about-slogan` | 「不完整，才是事情开始变好的地方」 |
-| 联系页脚 | `.contact`、`#contact`、`.contact-inner` | 全屏收尾区 |
-| 接案状态 | `.availability` | AVAILABLE FOR SELECTED PROJECTS |
-| 联系主标题 | `.contact h2` | 中文两行标题 |
-| 邮件入口 | `.mail-link` | mailto 链接与 Arrow |
-| 底部信息行 | `.footer-row` | 版权、电话、回到顶部 |
+| 关于区 | `.about`、`#about` | 桌面一屏，包含可拖动的纸质海报、英文标语与横幅 |
+| 关于区纸质海报 | `.about-poster-stage`、`AboutPoster` | `src` 指向可替换的 `3:4` 图稿。海报随拖动倾斜和卷曲，松手后以落点角度缓慢舒展 |
+| 关于区标语 | `.about-slogan` | 海报下层居中的英文标语 `Complete Incomplete` |
+| 关于区横幅 | `.about-image` | 与首页顶部导航等宽。在 `app/globals.css` 更换 `public/about-image-placeholder.svg` 对应的图片路径 |
+| 联系页脚 | `.contact`、`#contact`、`.contact-row` | 白底单行收尾区 |
+| 邮件入口 | `.mail-link` | 点击邮箱地址打开邮件草稿 |
+| 一键联系 | `.contact-sling`、`SlingButton` | 品牌橙磨砂图标，点击、键盘激活或拉动后松手均可打开邮件草稿 |
 
 关于区标语、海报图稿路径和联系信息写在 `app/page.tsx`。
 

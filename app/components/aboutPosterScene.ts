@@ -1,6 +1,22 @@
 import * as THREE from "three";
 
-export type PaperPose = { x: number; y: number; curl: number; axisX: number; axisY: number };
+export type PaperPose = { x: number; y: number; roll: number; pitch: number; yaw: number; curl: number; axisX: number; axisY: number };
+
+function createPaperGrain() {
+  const size = 128;
+  const pixels = new Uint8Array(size * size * 4);
+  for (let i = 0; i < pixels.length; i += 4) {
+    const grain = 40 + Math.random() * 176;
+    pixels.set([grain, grain, grain, 255], i);
+  }
+  const texture = new THREE.DataTexture(pixels, size, size);
+  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearMipmapLinearFilter;
+  texture.generateMipmaps = true;
+  texture.needsUpdate = true;
+  return texture;
+}
 
 export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
   const texture = await new THREE.TextureLoader().loadAsync(src);
@@ -20,19 +36,21 @@ export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1, 2500);
   camera.position.z = 1200;
-  const light = new THREE.DirectionalLight(0xffffff, 0.65);
+  const light = new THREE.DirectionalLight(0xffffff, 0.64);
   light.position.set(-260, 340, 800);
   light.castShadow = true;
   light.shadow.mapSize.set(1024, 1024);
   light.shadow.camera.far = 2400;
   light.shadow.normalBias = 2;
-  scene.add(light, new THREE.AmbientLight(0xffffff, 0.72));
+  scene.add(light, new THREE.AmbientLight(0xffffff, 0.43));
 
   const geometry = new THREE.PlaneGeometry(1, 1, 24, 30);
   const positions = geometry.getAttribute("position") as THREE.BufferAttribute;
   const original = new Float32Array(positions.array);
-  const front = new THREE.MeshLambertMaterial({ map: texture });
-  const back = new THREE.MeshLambertMaterial({ color: 0xf0eddf, side: THREE.BackSide });
+  const grain = createPaperGrain();
+  const paperSurface = { bumpMap: grain, bumpScale: 0.32, specular: 0x010101 };
+  const front = new THREE.MeshPhongMaterial({ ...paperSurface, map: texture });
+  const back = new THREE.MeshPhongMaterial({ ...paperSurface, color: 0xf0eddf, side: THREE.BackSide });
   const frontSheet = new THREE.Mesh(geometry, front);
   frontSheet.castShadow = true;
   frontSheet.frustumCulled = false;
@@ -43,9 +61,9 @@ export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
   scene.add(paper);
 
   const groundGeometry = new THREE.PlaneGeometry(1, 1);
-  const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.19 });
+  const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.29 });
   const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-  ground.position.z = -12;
+  ground.position.z = -16;
   ground.receiveShadow = true;
   scene.add(ground);
 
@@ -60,6 +78,7 @@ export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
       width = sheetWidth;
       height = sheetHeight;
       lastCurl = -1;
+      grain.repeat.set(width / 128, height / 128);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
       renderer.setSize(stageWidth, stageHeight, false);
       camera.left = -stageWidth / 2;
@@ -74,7 +93,7 @@ export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
       light.shadow.camera.right = light.shadow.camera.top = shadowSpan;
       light.shadow.camera.updateProjectionMatrix();
     },
-    render({ x, y, curl, axisX, axisY }: PaperPose) {
+    render({ x, y, roll, pitch, yaw, curl, axisX, axisY }: PaperPose) {
       if (curl !== lastCurl || axisX !== lastAxisX || axisY !== lastAxisY) {
         const extent = (Math.abs(axisX) * width + Math.abs(axisY) * height) / 2;
         const crease = extent * (1 - 1.25 * curl);
@@ -103,13 +122,14 @@ export async function createPaperScene(canvas: HTMLCanvasElement, src: string) {
         lastAxisY = axisY;
       }
 
-      paper.position.set(x, -y, 8 * curl);
-      const tilt = THREE.MathUtils.clamp(x / width, -0.75, 0.75);
-      paper.rotation.set(-y / height * 0.2, tilt * 0.16, -tilt * 0.32);
+      const lift = Math.abs(Math.sin(pitch)) * height / 2 + Math.abs(Math.sin(yaw)) * width / 2;
+      paper.position.set(x, -y, lift + 8 * curl);
+      paper.rotation.set(pitch, yaw, -roll, "ZYX");
       renderer.render(scene, camera);
     },
     dispose() {
       texture.dispose();
+      grain.dispose();
       geometry.dispose();
       front.dispose();
       back.dispose();

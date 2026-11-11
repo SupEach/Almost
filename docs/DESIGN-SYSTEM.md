@@ -48,7 +48,7 @@ Do not introduce a second styling architecture without an explicit project decis
 | Hero / About | `#fff` |
 | Category page | `#f4f3ef` |
 | Category archive block | `#0d0d0d` |
-| Contact | `#b8ff24` |
+| Contact | `#fff` |
 | Works | `#fff` |
 
 ### Text and dividers
@@ -90,21 +90,20 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 | Role / selector | Desktop value | Mobile value at `≤800px` |
 | --- | --- | --- |
 | Hero slogan | `clamp(42px, 6.1vw, 98px)`, weight 650, line-height `.92` | `clamp(38px, 12.6vw, 58px)`, line-height `.88` |
-| Works display heading | `min(10.6cqi, 288px)`, weight 500, line-height `.8` | Same fluid single-line rule |
-| About slogan | `clamp(32px, 8vw, 132px)`, weight 600, line-height `1.02` | Same fluid two-line rule |
+| Works display heading | `min(11.4cqi, 156px)`, weight 700, line-height `.8`, parentheses at `.9em` | `8.48cqi`, single line, parentheses at `.9em` |
+| About slogan | `min(9.7vw, 153px, 20svh)`, weight 500, line-height `.96`, tracking `-.05em` | `clamp(38px, 12.2vw, 90px)`, wraps as needed |
 | Category title | `clamp(72px, 11vw, 175px)`, weight 600, line-height `.78` | `clamp(60px, 19vw, 96px)` |
-| Contact display | `clamp(52px, 8.5vw, 130px)`, line-height `.92` | `16vw` |
+| Contact email | `clamp(21px, 3vw, 40px)` | `clamp(15px, 4.4vw, 21px)` |
 | Biography lead | `clamp(40px, 5vw, 72px)`, line-height `1` | `34px` |
 | Body biography | `16px`, line-height `1.9` | `13px`, line-height `1.75` |
 | Small labels / metadata | Mostly `6px–13px` with increased letter spacing | Mostly `7px–13px` |
 
 ### Typography behavior
 
-- Major display text uses negative tracking. The `Selected Works` heading uses `-.04em`.
+- Major display text uses negative tracking. `Selected Works` and the English hero slogan share `-.025em` tracking.
 - Hero slogan tracking changes by language through `:lang()` selectors.
 - The desktop hero slogan is single-line; mobile permits wrapping.
 - Metadata and navigation use small sizes with uppercase Latin text and wide tracking.
-- The outlined second line in the contact heading uses transparent fill with a `1.5px` dark stroke.
 
 There is no centralized semantic type-token API; roles are selector-based.
 
@@ -124,10 +123,10 @@ No named spacing scale is implemented. Values are hardcoded by selector, so a fo
 | Global shell maximum | `1440px` | No separate maximum change |
 | Nav outer inset | `18px` sides, `14px` top | `10px` sides, `8px` top |
 | Works vertical padding | `84px` top / `170px` bottom | `72px` top / `100px` bottom |
-| About vertical padding | `clamp(24px, 4vw, 64px)` top / `clamp(72px, 10vw, 150px)` bottom | Same fluid spacing |
+| About vertical padding | `clamp(20px, 5svh, 64px)` on both ends | `24px` top / `72px` bottom |
 | Featured card gap | `8px` | `8px` |
 | Category-grid top margin | `180px` | `96px` |
-| About poster to slogan gap | `clamp(42px, 7vw, 108px)` | Same fluid spacing |
+| About slogan top margin | No margin | `clamp(28px, 6vw, 48px)` |
 
 Do not infer a broader spacing scale from these values without a separate normalization decision.
 
@@ -152,10 +151,10 @@ At `≤800px`:
 | Area | Desktop | Mobile `≤800px` |
 | --- | --- | --- |
 | Homepage category panel group | Full-width grid, 12 panels in 3 columns | Full-width grid, 12 panels in 2 columns |
-| About poster | Centered `3 / 4` sheet above the slogan | Same layout with a larger relative sheet width |
+| About composition | One viewport tall. Centered slogan above an orange banner aligned to the homepage navigation edges. The `3 / 4` draggable sheet starts at the right | Content determines height. The banner uses the compact navigation width, and the sheet starts centered above the slogan |
 | Category intro | `25% 1fr` | Block layout |
 
-The hero, navigation, category hero, and contact sections use viewport-height sizing with `svh`.
+The homepage hero, category hero, and desktop About section use viewport-height sizing with `svh`.
 
 ---
 
@@ -209,7 +208,7 @@ There is no current-route active state because primary navigation targets homepa
 
 ### Featured cards
 
-- The strip spans the width directly above the works heading, with a `clamp(4px, .55vw, 9px)` gap. The strip reserves the default card height and cards expand upward on hover.
+- The strip spans the width above the works heading. The strip has `clamp(4px, .55vw, 9px)` bottom padding and the heading has `clamp(12px, 1.25vw, 24px)` top margin. The strip reserves the default card height and cards expand upward on hover.
 - Visual ratio: `3 / 4`.
 - Card radius: `16px`; inner visual radius: `15px`.
 - Desktop width: `(100vw - 72px) / 9`.
@@ -237,7 +236,7 @@ There is no current-route active state because primary navigation targets homepa
 - Open Graph image (`public/og.png`, declared as 1792×931 in metadata)
 - CSS-generated featured-card visuals
 - CSS-generated category-panel and category-hero visuals
-- Replaceable About poster SVG
+- Replaceable About poster and banner SVGs
 - Three.js hero canvas
 
 No real project-cover, hero, content-grid, image-pair, process-image, video, or caption module exists yet. Image ratios and delivery rules for real portfolio media are therefore **To confirm**.
@@ -246,6 +245,7 @@ Current rules that can be verified:
 
 - The featured placeholder ratio is `3 / 4`.
 - The About poster ratio is `3 / 4`.
+- The About banner uses a `24 / 7` desktop ratio capped at `44svh`, and a `2.2 / 1` compact ratio. It crops its replacement image to fill the frame.
 - Artwork surfaces use intentional clipping through `overflow: hidden`.
 - Framework/Cloudflare image optimization is configured at worker level but not exercised by the current page components.
 
@@ -275,8 +275,7 @@ A reusable project-detail layout is **Unknown / not implemented**.
 - Global anchors inherit color and remove underlines.
 - Desktop navigation links show a dark animated underline on hover.
 - Category panel arrows sit on an orange circle while their panel preview is active.
-- The mail link uses a `2px` bottom border and a large arrow glyph.
-- The footer contains telephone and back-to-top links without a separate component style.
+- The white contact footer places the mail link on the left and the frosted orange sling control on the right of a shared row with a `2px` dark bottom rule.
 
 ### Focus
 
@@ -294,6 +293,7 @@ The contact pill shares its hover and focus-visible visual state. Category panel
 - `contact-pill`: rounded “下一座山” control with active, hover, focus, pressed, and 650ms internal white-shine states; its width is 116px desktop and 104px mobile while text sizing remains unchanged.
 - `menu-button`: text-only compact-layout navigation control.
 - `round-link`: circular orange anchor centered under the studio copy in the hero footer. The link scrolls to `#works`.
+- `SlingButton`: circular frosted contact control with a brand-orange face, a mail icon, and a visible “一键联系” label.
 - `category-enter`: 44px square arrow link inset from the lower-right corner by the panel's horizontal text padding and `8px` from the bottom. The arrow shares this position in both preview states.
 
 There is no generic reusable button component or variant API.
@@ -306,7 +306,7 @@ There is no generic reusable button component or variant API.
 
 - Glass surfaces commonly use `1px` alpha-white borders.
 - Dividers commonly use `1px` dark/gray borders.
-- The mail link uses a `2px` dark bottom border.
+- The contact row uses a `2px` dark bottom border.
 
 ### Radius
 
@@ -334,14 +334,14 @@ The Works section shares `--works-card-radius` (`16px`) between featured cards a
 | --- | --- |
 | Hero slogan entrance | `500ms`, cubic-bezier `(.22,.8,.3,1)`, fade/translate/blur |
 | Hero footer copy | Six keyword groups jitter one at a time with chromatic offsets. Pauses are `120–480ms` between groups and `450–900ms` between rounds. The loop runs while the copy is visible. |
-| Selected Works title | React Bits VariableProximity interpolates Montserrat weight from `500` to `900` with linear falloff within `100px` of the pointer. Letters ease back to the base weight as the pointer moves away. |
-| About paper poster | The sheet curls in the direction of the grabbed edge, casts a moving shadow, and flattens back at center on release. A flat drag interaction is available with reduced motion. |
+| Selected Works title | React Bits VariableProximity interpolates Montserrat weight from `700` to `900` with linear falloff within `100px` of the pointer. Letters and parentheses ease back to Bold as the pointer moves away. |
+| About paper poster | The textured sheet curls at the grabbed edge and tilts with the direction and extent of the drag. It holds its drop position and angle as the bend and depth settle. Reduced motion uses a flat drag. |
 | Navigation underline | `250ms` |
 | Contact pill | mostly `250ms`; selected internal white shine `650ms` |
 | Featured-card expansion | `480ms`, cubic-bezier `(.2,.8,.2,1)` |
 | Featured track | `58s` linear infinite; `42s` mobile |
 | Homepage category preview | `250ms` opacity transition |
-| Availability pulse | `1.5s` infinite |
+| Contact sling | The icon stretches the band with the pointer. An armed release recoils and throws brand-orange particles before opening the mail draft. Click and keyboard activation open the draft directly. |
 | Hero canvas | continuous requestAnimationFrame rotation |
 
 There is no centralized fast/standard/slow motion token set.
@@ -353,6 +353,7 @@ At `prefers-reduced-motion: reduce`:
 - smooth scrolling is disabled;
 - CSS animation and transition are disabled globally.
 - The hero footer and Selected Works title display as static text.
+- The contact sling opens the draft with an immediate return and no particle burst under reduced motion.
 
 The Three.js hero loop is JavaScript-driven and does not currently check reduced-motion preference, so it continues to render. Whether it should stop is **To confirm**.
 
@@ -368,9 +369,9 @@ At `≤800px`, the implementation:
 - allows the hero slogan to wrap;
 - reduces featured-card width and expansion;
 - lays out the category panels in two columns and activates tap previews;
-- gives the About poster a larger relative width;
+- preserves side gutters around the enlarged About poster;
 - stacks category introductions;
-- adapts footer alignment and contact typography.
+- reduces the contact email size so the email and action fit on one row.
 
 There is no intermediate tablet-specific layout. Behavior on viewport widths near 800px should be treated as one breakpoint transition.
 
@@ -387,7 +388,7 @@ Verified current support:
 - the hero English logo has `alt="Studio Almost"`;
 - the Three.js canvas wrapper is `aria-hidden`;
 - the project strip, category navigation, and About poster have labels;
-- the About poster can be lifted with Enter or Space;
+- the About poster can be moved with the arrow keys and lifted with Enter or Space;
 - reduced-motion CSS is present;
 - key navigation controls have explicit focus styling.
 
