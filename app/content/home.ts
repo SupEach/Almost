@@ -34,6 +34,19 @@ export const homeCategoryPanels = [
   { label: "Web", title: "网站", slug: "commercial-web", art: "art-ui" },
 ];
 
+export const teamMembers = [
+  { text: "leVel", marquee: "Director", image: "/team/level-portrait-placeholder.jpg" },
+  { text: "Pamela", marquee: "Co-founder", image: "/team/pamela-portrait-placeholder.jpg" },
+];
+
+// Temporary Simple Icons; replace these paths with the final partner SVGs.
+export const partnerLogos = [
+  { src: "/partners/react-placeholder.svg", alt: "React", title: "React", width: 48, height: 48 },
+  { src: "/partners/nextjs-placeholder.svg", alt: "Next.js", title: "Next.js", width: 48, height: 48 },
+  { src: "/partners/typescript-placeholder.svg", alt: "TypeScript", title: "TypeScript", width: 48, height: 48 },
+  { src: "/partners/tailwindcss-placeholder.svg", alt: "Tailwind CSS", title: "Tailwind CSS", width: 48, height: 48 },
+];
+
 export const heroSlogans = [
   { lang: "en", text: "We’re almost there." },
   { lang: "zh-CN", text: "直到下一座山" },

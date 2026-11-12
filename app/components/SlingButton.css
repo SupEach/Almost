@@ -104,7 +104,7 @@
 .sling-button__label {
   position: absolute;
   top: 50%;
-  inset-inline-end: calc(100% + 12px);
+  inset-inline-end: calc(100% + var(--sl-label-gap, 12px));
   transform: translateY(-50%);
   white-space: nowrap;
   pointer-events: none;

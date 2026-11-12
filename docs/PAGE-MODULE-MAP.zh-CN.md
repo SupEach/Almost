@@ -1,16 +1,21 @@
 # 不周山设计 · 页面与模块命名说明
 
-核对日期为 2026 年 11 月 10 日。本文以当前实现为基准，供标注截图、提交设计修改和核对范围时使用。表中的中文名称用于沟通，页面显示文案和网址以现有实现为准。
+首页设计定稿日期为 **2026 年 11 月 12 日（Asia/Hong_Kong）**。本文以当日确认的首页实现为基准，供标注截图、提交设计修改和核对范围时使用。表中的中文名称用于沟通，页面显示文案和网址以现有实现为准。
+
+- [首页素材数量与尺寸清单](HOMEPAGE-ASSET-INVENTORY-2026-11-12.zh-CN.md)：按本文模块名称列出独立文件、展示位、原始尺寸、响应式显示尺寸及替换入口。
+- [定稿备份与回滚说明](HOMEPAGE-FINAL-BACKUP-2026-11-12.zh-CN.md)：固定版本标识、备份范围、校验方式及恢复步骤。
+
+定稿基线为 `codex/homepage-final-2026-11-12`。首页视觉、布局和交互已确认；下文明确标记的成员照片、合作品牌图标、作品图形等仍是素材占位，后续替换素材不等同于重新设计首页。
 
 ## 1. 先确定页面范围
 
 | 指令中使用的名称 | 当前地址 | 所指范围 |
 | --- | --- | --- |
-| 首页 | `/` | 整张纵向滚动页面，包含首屏、作品区、关于区和联系页脚 |
+| 首页 | `/` | 整张纵向滚动页面，依次包含首屏、作品区、关于区、合作品牌 Logo 和联系页脚 |
 | 首页 · 首屏 | `/#home` | 山体、橙色英文标志、多语言标语及首屏上下信息 |
-| 首页 · 作品区 | `/#works` | 白底展示区，依次排列横向精选条带、`（Selected Works）` 标题和十二类面板组 |
-| 首页 · 关于区 | `/#about` | 桌面一屏，包含英文标语、橙色横幅和可拖动的纸质海报 |
-| 首页 · 联系页脚 | `/#contact` | 白底联系行，左侧邮箱带悬停气泡，右侧是拖动联系按钮，下方为版权和英文 Logo |
+| 首页 · 作品区 | `/#works` | 白底展示区，依次排列横向精选条带、`Selected Works` 标题和十二类面板组 |
+| 首页 · 关于区 | `/#about` | 两行成员介绍位于顶部，下接桌面一屏的英文标语、橙色横幅和可拖动纸质海报 |
+| 首页 · 联系页脚 | `/#contact` | 上方为合作品牌 Logo 循环条带；白底联系行左侧邮箱带悬停词元掉落，右侧是拖动联系按钮，下方为版权和完整版 Logo |
 | 作品分类页 | `/works/[slug]` | 从首页分类入口打开的六张独立页面，共用一个模板 |
 
 首页顶部导航在滚动时持续显示。`Works`、`About`、`Contact` 分别跳到同一张首页的三个区块。描述范围时，可用「首页首屏以下」指作品区、关于区和联系页脚，用「六个作品分类页」指独立页面。**独立作品总览、单个作品详情页和简历下载入口仍待建设。**
@@ -44,10 +49,10 @@
 | 模块名 | 画面定位与现有行为 | 代码定位 |
 | --- | --- | --- |
 | 横向精选条带 | 位于标题上方，连续横向滚动，共 18 条精选作品记录 | `.featured-projects`、`.featured-track` |
-| 精选作品标题 | 条带下方的单行 `（Selected Works）`，使用 Montserrat Bold，括号为标题字号的 90%。指针靠近时字母和括号逐个增重，移开后恢复 | `.works-heading`、`VariableProximity` |
+| 精选作品标题 | 条带下方的单行 `Selected Works`，无括号。Montserrat 正体、字距 `-5%`、自然居中；循环从 Light（300、全透明）到 ExtraBold（800、全不透明），顶峰停留 1 秒，鼠标交互可到 Heavy（900）；字色 `#000000`。减少动态效果时为不透明静态 Bold | `.works-heading`、`TextPressure` |
 | 精选作品卡片 | 条带里的单个编号作品，如 `01 HOLIDAY PARK`；鼠标悬停时放大 | `.featured-card` |
 | 精选卡片画面 | 卡片内部的 CSS 占位图形、编号和英文名 | `.featured-visual`、`.art-*` |
-| 十二类面板组 | 精选条带下方的全宽白底网格，桌面三列、窄屏两列。横线两端缩进，竖线逐行断开，上下各留出 `16px` 圆角空间 | `.category-grid` |
+| 十二类面板组 | 精选条带下方的全宽白底网格，桌面三列、窄屏两列。横线两端缩进，竖线逐行断开，上下各留出 `16px` 圆角空间。全部 12 张图片预览带白色聚光、颗粒、边缘光和按压增强 | `.category-grid`、`SpotlightCard` |
 | 单张分类面板 | 左上英文名，左下黑底中文标签与白底案例数，右下进入箭头 | `.category-panel`、`.category-panel-title`、`.category-panel-badges`、`.category-enter` |
 | 分类图像预览 | 桌面悬停或手机轻点时，图像铺满面板，英文名和标签淡出，图像圆角与精选卡片同为 `16px` | `.category-preview`、`.category-panel-art` |
 | 分类进入箭头 | 面板右下向内缩进的 `→`，预览时在同一位置显示橙色圆形底，链接到子类所属的原分类页 | `.category-enter` |
@@ -68,13 +73,15 @@
 | 模块名 | 画面定位 | 代码定位 |
 | --- | --- | --- |
 | 关于区纸质海报 | 可在纯白关于区内拖动并遮挡标语。拖动时卷曲、倾斜，松手后保留落点和角度，纸张逐渐舒展 | `.about-poster-stage`、`AboutPoster` |
+| 工作室成员 | 与橙色横幅等宽的两行 `leVel` / `Pamela`，上下及中间有黑线；悬停、聚焦或触摸时流动带显示 `Director` / `Co-founder` 和圆形人物样图。快速滚动离开后清除流动层，未悬停时干净显示姓名 | `.about-team`、`FlowingMenu`、`teamMembers` |
 | 海报图形占位 | 带山形线条和橙色圆形的可替换图稿 | `public/about-poster-placeholder.svg` |
 | 关于区标语 | 海报下层居中的英文大字 `Complete Incomplete` | `.about-slogan` |
 | 关于区横幅 | 标语下方的橙色图片占位，左右与首页顶部导航对齐 | `.about-image`、`public/about-image-placeholder.svg` |
-| 邮件入口 | 联系行左侧的邮箱地址，字号为原来的 60%，悬停或键盘聚焦显示「与我联系↓」磨砂气泡 | `.mail-link`、`.mail-tooltip` |
-| 一键联系 | 联系行右侧的纯品牌橙邮件图标，固定提示「拖动按钮→」。拉动达到触发距离后松手会溅出橙色粒子并打开确认弹窗 | `.contact-sling`、`SlingButton` |
+| 合作品牌 Logo | 关于区与联系页脚之间的黑色 SVG 循环条带，向右滚动、悬停暂停、可拖动；当前四个技术品牌图标为临时占位，后续替换 `partnerLogos` 即可 | `.partners`、`LogoLoop`、`partnerLogos` |
+| 邮件入口 | 邮箱为 `studioalmostworks@gmail.com`，按 `studio/almost/works/@/gmail/./com` 七项掉落，静止时连续显示，前三项为品牌橙。仅经过文字触发掉落，仅点击文字打开邮件，静止及掉落时的空白点击均不打开邮件。散落底线与右侧按钮下沿对齐，词元可拖动，指针离开且静止 2 秒后复位；拖动不打开邮件，键盘回车可打开 | `.mail-link`、`FallingText` |
+| 一键联系 | 无半透明外圈的橙色按钮使用放大至 44px 的白色附件品牌图标，固定提示「DRAG ME →」与首屏底栏共用字体，间距桌面 24px / 窄屏 18px；≤360px 提示位于图标上方。拉动后松手会溅出橙色粒子并打开确认弹窗 | `.contact-sling`、`SlingButton` |
 | 项目确认弹窗 | 「有项目？看看我最近有没有空。」，「没错」「点错了」暂时仅关闭弹窗，后续接入二级页面 | `.contact-dialog` |
-| 页脚落款 | 分割线左下为 STUDIO ALMOST 版权，右下为小尺寸英文横版 SVG Logo | `.contact-meta`、`.contact-copyright`、`.contact-wordmark` |
+| 页脚落款 | 分割线左下为两行 STUDIO ALMOST 版权，右下为附件完整版橙色横版 SVG Logo，窄屏按剩余空间等比缩小 | `.contact-meta`、`.contact-copyright`、`.contact-wordmark` |
 
 「首屏底栏」位于山体首屏底部。「联系页脚」位于首页最末端。「山体线框」是首屏主视觉，「关于区纸质海报」位于首页下方的关于区。
 
@@ -113,7 +120,7 @@
 | 所有分类页 | 「六个分类页 → 共用模板 → 分类介绍区。统一缩小标签和正文之间的垂直间距。」 |
 | 区分首页与其他页面 | 「调整首页首屏以下的三个区块」或「调整六个独立作品分类页」。 |
 
-同一模块有多种状态时，可附「默认、悬停、键盘聚焦、点击、拖动中、松手回弹」之一。手机问题可附视口宽度，例如 `390px`。当前紧凑布局的宽度断点是 `800px` 及以下。
+同一模块有多种状态时，可附「默认、悬停、键盘聚焦、点击、拖动中、松手回弹」之一。手机问题可附视口宽度，例如 `390px`。当前紧凑布局的宽度断点是 `800px` 及以下；联系区在 `360px` 及以下将「DRAG ME →」移到图标上方。
 
 ## 5. 对照文件
 
@@ -122,7 +129,11 @@
 | 首页的结构与交互 | [首页模板](../app/page.tsx) |
 | 六个分类页的共用结构 | [分类页模板](../app/works/%5Bslug%5D/page.tsx) |
 | 分类名称、路径和介绍 | [分类数据](../app/content/categories.ts) |
-| 精选作品、十二类面板、能力项、多语言标语 | [首页数据](../app/content/home.ts) |
+| 精选作品、十二类面板、成员、合作品牌占位图标、多语言标语 | [首页数据](../app/content/home.ts) |
 | 山体资料、引语与坐标 | [山体数据](../app/content/mountains.ts) |
 | 英文标志逐字交互 | [TechText](../app/components/TechText.jsx) 和 [TechText 样式](../app/components/TechText.css) |
+| 精选标题、分类聚光、成员和合作品牌动效 | [TextPressure](../app/components/TextPressure.jsx)、[SpotlightCard](../app/components/SpotlightCard.jsx)、[FlowingMenu](../app/components/FlowingMenu.jsx)、[LogoLoop](../app/components/LogoLoop.jsx) |
+| 邮箱词元掉落与联系按钮 | [FallingText](../app/components/FallingText.jsx)、[SlingButton](../app/components/SlingButton.jsx)、[首页点击范围约束](../app/page.tsx) |
+| 首页图片、图标数量与尺寸 | [定稿素材清单](HOMEPAGE-ASSET-INVENTORY-2026-11-12.zh-CN.md) |
+| 定稿版本备份与回滚 | [定稿备份说明](HOMEPAGE-FINAL-BACKUP-2026-11-12.zh-CN.md) |
 | 主要布局样式、项目状态与视觉规则 | [全局样式](../app/globals.css)、[项目状态](PROJECT-STATE.md)、[设计系统](DESIGN-SYSTEM.md) |

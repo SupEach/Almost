@@ -2,6 +2,8 @@
 
 React / TypeScript / vinext 网站，目前包含首页和六个作品分类落地页。
 
+首页设计已于 **2026-11-12** 定稿。参见 [页面与模块地图](docs/PAGE-MODULE-MAP.zh-CN.md)、[素材数量与尺寸清单](docs/HOMEPAGE-ASSET-INVENTORY-2026-11-12.zh-CN.md)、[定稿备份与回滚说明](docs/HOMEPAGE-FINAL-BACKUP-2026-11-12.zh-CN.md)。固定备份分支为 `codex/homepage-final-2026-11-12`。
+
 ## 本地预览
 
 使用 Node.js >=22.13.0 和 pnpm 11.22.0。沿用现有 pnpm 安装树，pnpm-lock.yaml 为依赖依据；package-lock.json 仅保留历史参考，请勿混用 npm install。

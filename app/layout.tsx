@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "薛譞杰 — 视觉设计总监",
     description: "视觉，有其引力。",
-    images: [{ url: "/og.png", width: 1792, height: 931 }],
+    images: [{ url: "/og.png", width: 1731, height: 909 }],
   },
 };
 

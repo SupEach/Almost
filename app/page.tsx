@@ -1,21 +1,24 @@
 "use client";
 
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import MailSend01Icon from "@hugeicons/core-free-icons/MailSend01Icon";
-import { featuredProjects, homeCategoryPanels, heroSlogans } from "./content/home";
+import { featuredProjects, homeCategoryPanels, heroSlogans, partnerLogos, teamMembers } from "./content/home";
 import { mountainScenes } from "./content/mountains";
 import AboutPoster from "./components/AboutPoster";
+import FlowingMenu from "./components/FlowingMenu";
+import FallingText from "./components/FallingText";
 import LanguageDecryptedText from "./components/LanguageDecryptedText";
+import LogoLoop from "./components/LogoLoop";
 import SlingButton from "./components/SlingButton";
+import SpotlightCard from "./components/SpotlightCard";
 import StudioMeta from "./components/StudioMeta";
 import TechText from "./components/TechText";
-import VariableProximity from "./components/VariableProximity";
+import TextPressure from "./components/TextPressure";
 
 const GenerativeCanvas = lazy(() => import("./components/GenerativeCanvas"));
 const heroWordmark = "/brand-logo-en-orange.svg";
 const defaultCategoryCaseCount = 18;
-const contactEmail = "levelfoto@gmail.com";
+const contactEmail = "studioalmostworks@gmail.com";
+const contactEmailTokens = ["studio", "almost", "works", "@", "gmail", ".", "com"];
 const contactHref = `mailto:${contactEmail}`;
 
 export default function Home() {
@@ -25,7 +28,6 @@ export default function Home() {
   const [previewedCategory, setPreviewedCategory] = useState<string | null>(null);
   const mountainButtonTimer = useRef<number | null>(null);
   const heroStageRef = useRef<HTMLDivElement>(null);
-  const worksHeadingRef = useRef<HTMLHeadingElement>(null);
   const contactDialogRef = useRef<HTMLDialogElement>(null);
   const currentSceneIndex = graphicVariation % mountainScenes.length;
   const currentScene = mountainScenes[currentSceneIndex];
@@ -146,17 +148,26 @@ export default function Home() {
         </div>
 
         <div className="works-heading">
-          <h2 ref={worksHeadingRef}>
-            <VariableProximity
-              label="（Selected Works）"
-              visualLabel="(Selected Works)"
-              fromFontVariationSettings="'wght' 700"
-              toFontVariationSettings="'wght' 900"
-              containerRef={worksHeadingRef}
-              radius={100}
-              style={{ whiteSpace: "nowrap" }}
-            />
-          </h2>
+          <TextPressure
+            text="Selected Works"
+            flex={false}
+            alpha
+            textColor="#000000"
+            stroke={false}
+            width={false}
+            weight
+            minWeight={300}
+            maxWeight={900}
+            idleMaxWeight={800}
+            peakHold={1000}
+            italic={false}
+            radius={0.4}
+            smoothing={0.85}
+            idle="pulse"
+            idleSpeed={0.7}
+            clickRipple
+            minFontSize={36}
+          />
         </div>
 
         <nav className="category-grid" aria-label="十二类作品面板">
@@ -174,7 +185,24 @@ export default function Home() {
                   setPreviewedCategory(current => current === panel.label ? null : panel.label);
                 }}
               >
-                <span className={`category-panel-art ${panel.art}`} aria-hidden="true" />
+                <span className={`category-panel-art ${panel.art}`} aria-hidden="true">
+                  <SpotlightCard
+                    as="span"
+                    overlay
+                    theme="dark"
+                    spotlightColor="#ffffff"
+                    intensity={0.15}
+                    spotlightSize={360}
+                    softness={0.7}
+                    shape="circle"
+                    borderGlow={0.6}
+                    proximity={80}
+                    smoothing={0.3}
+                    grain={0.8}
+                    ambient={false}
+                    flare
+                  />
+                </span>
                 <span className="category-panel-title">{panel.label}</span>
                 <span className="category-panel-badges">
                   <span className="category-panel-label">{panel.title}</span>
@@ -188,40 +216,104 @@ export default function Home() {
       </section>
 
       <section className="about" id="about">
+        <div className="about-team">
+          <FlowingMenu
+            items={teamMembers}
+            speed={55}
+            stretch={1}
+            magnet={0.4}
+            followCursor={0.4}
+            textColor="#000000"
+            bgColor="#ffffff"
+            marqueeBgColor="#000000"
+            marqueeTextColor="#ffffff"
+            borderColor="#000000"
+            duration={0.65}
+            bandInset={18}
+            bandRadius={22}
+            dividers
+            dimInactive
+            imageShape="circle"
+            ariaLabel="工作室成员"
+          />
+        </div>
         <AboutPoster src="/about-poster-placeholder.svg">
           <h2 className="about-slogan shell" lang="en">Complete Incomplete</h2>
           <div className="about-image" aria-hidden="true" />
         </AboutPoster>
       </section>
 
+      <div className="partners">
+        <div className="shell">
+          <LogoLoop
+            logos={partnerLogos}
+            speed={100}
+            direction="right"
+            logoHeight={48}
+            gap={60}
+            hoverSpeed={0}
+            scaleOnHover={false}
+            ariaLabel="合作品牌 Logo"
+          />
+        </div>
+      </div>
+
       <footer className="contact" id="contact">
         <div className="shell contact-inner">
           <div className="contact-row">
             <span className="mail-entry">
-              <a className="mail-link" href={contactHref} aria-describedby="contact-email-hint">{contactEmail}</a>
-              <span className="mail-tooltip" id="contact-email-hint" role="tooltip">与我联系↓</span>
+              <a
+                className="mail-link"
+                href={contactHref}
+                aria-label={contactEmail}
+                onClick={(event) => {
+                  if (event.detail === 0) return; // Preserve keyboard and assistive activation.
+                  // Pointer capture may retarget a word click to the physics container.
+                  const hit = document.elementFromPoint(event.clientX, event.clientY);
+                  if (!hit?.closest(".falling-text__piece") || !event.currentTarget.contains(hit)) {
+                    event.preventDefault();
+                  }
+                }}
+              >
+                <FallingText
+                  text={contactEmail}
+                  tokens={contactEmailTokens}
+                  separator=""
+                  highlightWords={["studio", "almost", "works"]}
+                  trigger="hover"
+                  split="words"
+                  fontSize="inherit"
+                  accentColor="var(--brand-orange)"
+                  gravity={1}
+                  bounciness={0.45}
+                  scatter={0.9}
+                  stagger={0.045}
+                  restoreDelay={2}
+                  aria-hidden="true"
+                />
+              </a>
             </span>
             <SlingButton
               className="contact-sling"
-              label="拖动按钮→"
+              label="DRAG ME →"
               ariaLabel="一键联系"
               hint="拉动图标后松手打开项目确认弹窗，也可点击或按回车。"
               padColor="var(--brand-orange)"
               accentColor="var(--brand-orange)"
-              iconColor="var(--ink)"
-              wellColor="color-mix(in srgb, var(--brand-orange) 13%, white)"
+              iconColor="#ffffff"
+              showWell={false}
               bandColor="color-mix(in srgb, var(--brand-orange) 45%, white)"
               onSend={() => {
                 const dialog = contactDialogRef.current;
                 if (dialog && !dialog.open) dialog.showModal();
               }}
             >
-              <HugeiconsIcon icon={MailSend01Icon} size={24} strokeWidth={2.2} aria-hidden="true" />
+              <img className="contact-brand-icon" src="/brand-logo-icon.svg" alt="" width={44} height={44} aria-hidden="true" draggable={false} />
             </SlingButton>
           </div>
           <div className="contact-meta">
             <p className="contact-copyright">© {new Date().getFullYear()} STUDIO ALMOST<span>ALL RIGHTS RESERVED.</span></p>
-            <img className="contact-wordmark" src={heroWordmark} alt="Studio Almost" width={856} height={120} />
+            <img className="contact-wordmark" src="/brand-logo-full-orange.svg" alt="Studio Almost 不周山" width={1500} height={120} />
           </div>
         </div>
         <dialog className="contact-dialog" ref={contactDialogRef} aria-labelledby="contact-dialog-message">

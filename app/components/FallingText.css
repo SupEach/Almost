@@ -1,0 +1,12 @@
+.falling-text { position:relative; display:flex; align-items:center; justify-content:flex-start; width:100%; height:100%; overflow:hidden; box-sizing:border-box; user-select:none; -webkit-user-select:none; -webkit-tap-highlight-color:transparent; }
+.falling-text__text { flex:none; box-sizing:border-box; line-height:1.2; text-align:left; white-space:nowrap; }
+/* Only the resting text receives hover; physics keeps the full stage interactive. */
+.falling-text[data-trigger='hover']:not([data-phase]) { pointer-events:none; }
+.falling-text[data-trigger='hover']:not([data-phase]) .falling-text__text { pointer-events:auto; }
+.falling-text__group { white-space:nowrap; }
+.falling-text__piece { display:inline-block; white-space:pre; }
+.falling-text__piece.highlighted { color:var(--falling-text-accent); }
+.falling-text[data-phase] .falling-text__piece { will-change:transform; }
+.falling-text[data-draggable][data-phase='falling'] .falling-text__piece { touch-action:none; cursor:grab; }
+.falling-text[data-dragging],.falling-text[data-dragging] .falling-text__piece { cursor:grabbing; }
+.falling-text--wireframes .falling-text__piece { outline:1px solid currentColor; outline-offset:-1px; }

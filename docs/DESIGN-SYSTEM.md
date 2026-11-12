@@ -4,7 +4,7 @@
 >
 > Values documented here describe the code as it exists. They are not a redesign proposal.
 
-**Last audited:** 2026-08-20  
+**Last audited:** 2026-11-12
 **Implementation source:** `app/globals.css`, `app/page.tsx`, `app/works/[slug]/page.tsx`, `app/layout.tsx`, and assets under `public/`.
 
 ---
@@ -81,7 +81,7 @@ Generic fallback: sans-serif
 
 Local font files exist for Kanit weights 400, 500, 600, and 700, all with `font-display: swap`.
 
-The `Selected Works` heading uses a local Latin subset of Montserrat with a variable weight axis.
+The `Selected Works` heading uses a local Latin subset of Montserrat with a variable weight axis. It stays upright throughout its pressure animation.
 
 Current CSS also requests `font-weight: 650` for several major headings. No 650 font face is declared, so exact rendering between 600 and 700 is browser-dependent. A deliberate weight decision is **To confirm**.
 
@@ -90,7 +90,7 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 | Role / selector | Desktop value | Mobile value at `≤800px` |
 | --- | --- | --- |
 | Hero slogan | `clamp(42px, 6.1vw, 98px)`, weight 650, line-height `.92` | `clamp(38px, 12.6vw, 58px)`, line-height `.88` |
-| Works display heading | `min(11.4cqi, 156px)`, weight 700, line-height `.8`, parentheses at `.9em` | `8.48cqi`, single line, parentheses at `.9em` |
+| Works display heading | `max(36px, min(11.4cqi, 156px))`, idle weight Light `300` to ExtraBold `800`, pointer up to `900`, line-height `1`, no parentheses | `max(36px, 8.48cqi)`, single line |
 | About slogan | `min(9.7vw, 153px, 20svh)`, weight 500, line-height `.96`, tracking `-.05em` | `clamp(38px, 12.2vw, 90px)`, wraps as needed |
 | Category title | `clamp(72px, 11vw, 175px)`, weight 600, line-height `.78` | `clamp(60px, 19vw, 96px)` |
 | Contact email | `clamp(12.6px, 1.8vw, 24px)` | `clamp(9px, 2.64vw, 12.6px)` |
@@ -100,7 +100,7 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 
 ### Typography behavior
 
-- Major display text uses negative tracking. `Selected Works` and the English hero slogan share `-.025em` tracking.
+- Major display text uses negative tracking. `Selected Works` uses `-.05em` tracking with natural centered spacing; the English hero slogan uses `-.025em`.
 - Hero slogan tracking changes by language through `:lang()` selectors.
 - The desktop hero slogan is single-line; mobile permits wrapping.
 - Metadata and navigation use small sizes with uppercase Latin text and wide tracking.
@@ -151,10 +151,10 @@ At `≤800px`:
 | Area | Desktop | Mobile `≤800px` |
 | --- | --- | --- |
 | Homepage category panel group | Full-width grid, 12 panels in 3 columns | Full-width grid, 12 panels in 2 columns |
-| About composition | One viewport tall. Centered slogan above an orange banner aligned to the homepage navigation edges. The `3 / 4` draggable sheet starts at the right | Content determines height. The banner uses the compact navigation width, and the sheet starts centered above the slogan |
+| About composition | Two member rows above a one-viewport poster composition. Menu and orange banner share navigation edges. The `3 / 4` sheet starts at the right of the banner | Two member rows above the content-height poster composition. The sheet starts centered above the slogan |
 | Category intro | `25% 1fr` | Block layout |
 
-The homepage hero, category hero, and desktop About section use viewport-height sizing with `svh`.
+The homepage hero, category hero, and desktop About poster composition use viewport-height sizing with `svh`. The member rows sit above the poster composition and add to the full About section's height.
 
 ---
 
@@ -164,10 +164,11 @@ The homepage hero, category hero, and desktop About section use viewport-height 
 
 ```text
 Mobile / compact layout: max-width 800px
+Contact label above icon: max-width 360px (contact footer only)
 Reduced motion: prefers-reduced-motion: reduce
 ```
 
-No additional width breakpoints exist.
+Other page layouts use the main 800px breakpoint.
 
 ```text
 Tablet-specific breakpoint: Not present
@@ -223,6 +224,7 @@ There is no current-route active state because primary navigation targets homepa
 
 - Square white tiles span the page width. The `1px` column rules are split by row, with each segment inset `16px` from the top and bottom to align with the preview's corner radius. Horizontal rules between rows are inset to each tile's text edges. Each tile has a left-aligned English title and a lower row with a black Chinese label, white count pill, and `→` link.
 - The preview fades in across the entire tile with the featured card's `16px` corner radius as the title and badges fade out. The arrow gains a 36px orange circle inside its 44px link target. Tile dimensions stay fixed during preview.
+- Each of the twelve image previews includes the same SpotlightCard overlay: white light, `.15` intensity, `360px` radius, `.7` softness, `.6` edge glow, `80px` proximity, `.3` smoothing, `.8` grain, press flare, and no ambient drift. The overlay inherits the `16px` corners, adds no surface/shadow/padding, and leaves pointer targets intact. It appears only with the image. Keyboard focus lights the image center; reduced motion removes lag and flare.
 - A fine hover pointer reveals the preview on desktop. Compact and touch layouts toggle the preview by tapping the tile, and a keyboard user can toggle it with Enter or Space. A new tap selection closes the previous one.
 - Each count displays the provisional value `18`. The arrow links to the corresponding parent category page.
 
@@ -233,10 +235,11 @@ There is no current-route active state because primary navigation targets homepa
 ### Current implemented roles
 
 - Site logos (`public/*.svg`)
-- Open Graph image (`public/og.png`, declared as 1792×931 in metadata)
+- Open Graph image (`public/og.png`, `1731×909`, matching metadata)
 - CSS-generated featured-card visuals
 - CSS-generated category-panel and category-hero visuals
 - Replaceable About poster and banner SVGs
+- Partner SVG strip between About and Contact: black logos, `48px` high, `60px` gaps, inside the shared `.shell` width on white. The wrapper is `clamp(120px,14vw,200px)` high and centers the loop vertically. The four current technology icons are temporary artwork.
 - Three.js hero canvas
 
 No real project-cover, hero, content-grid, image-pair, process-image, video, or caption module exists yet. Image ratios and delivery rules for real portfolio media are therefore **To confirm**.
@@ -275,8 +278,8 @@ A reusable project-detail layout is **Unknown / not implemented**.
 - Global anchors inherit color and remove underlines.
 - Desktop navigation links show a dark animated underline on hover.
 - Category panel arrows sit on an orange circle while their panel preview is active.
-- The white contact footer places the mail link on the left and the solid orange sling control on the right of a shared row with a `2px` dark bottom rule. The email has no hover underline; hover or keyboard focus reveals the small frosted “与我联系↓” bubble above it. The link retains a `44px` minimum hit height.
-- Below the rule, small STUDIO ALMOST copyright text sits left and the original English SVG wordmark sits right, at `112px` wide on desktop and `96px` on compact layouts.
+- The white contact footer places the mail link on the left and the solid orange sling control on the right of a shared row with a `2px` dark bottom rule. The email is `studioalmostworks@gmail.com` with `.02em` tracking and no tooltip or hover underline. Its `studioalmostworks` prefix uses brand orange; `@gmail.com` uses ink. Seven FallingText word tokens (`studio`, `almost`, `works`, `@`, `gmail`, `.`, `com`) join without visible separators. The `56px` physics area shares the icon button's bottom edge. Pointer clicks open mail only on the text tokens, including after they fall; blank space has a default cursor and never opens mail. The full email remains the accessible `mailto:` link name; keyboard/assistive activation works, and dragging tokens suppresses accidental activation.
+- Below the rule, small STUDIO ALMOST copyright text sits left and the supplied full orange SVG logo sits right. Its preferred width is `200px` on desktop and `168px` on compact layouts, preserving approximately the previous logo height. It shrinks proportionally when space is limited so the two copyright lines remain intact.
 
 ### Focus
 
@@ -294,7 +297,7 @@ The contact pill shares its hover and focus-visible visual state. Category panel
 - `contact-pill`: rounded “下一座山” control with active, hover, focus, pressed, and 650ms internal white-shine states; its width is 116px desktop and 104px mobile while text sizing remains unchanged.
 - `menu-button`: text-only compact-layout navigation control.
 - `round-link`: circular orange anchor centered under the studio copy in the hero footer. The link scrolls to `#works`.
-- `SlingButton`: solid brand-orange circular contact control with a mail icon and a fixed `11px` “拖动按钮→” label outside its moving icon wrapper. Its accessible name remains “一键联系”.
+- `SlingButton`: solid brand-orange circular contact control with the supplied brand icon enlarged to `44px`, displayed in white through a local CSS filter. The original SVG is preserved. There is no outer well (`showWell=false`). Its fixed “DRAG ME →” label shares the hero footer's Kanit typography: `clamp(11px,1vw,14px)`, weight `400`, line-height `1.45`, tracking `.03em`. It sits outside the moving icon wrapper, with a `24px` gap on desktop and `18px` at `≤800px`. At `≤360px` the label sits above the icon with the same `18px` gap. The accessible name remains “一键联系”; focus styling, stretch, recoil, and particles remain enabled.
 - Contact confirmation uses a native modal dialog: a white `16px`-radius surface, a dim backdrop, the prompt “有项目？看看我最近有没有空。”, and “没错” / “点错了” buttons. Both choices currently dismiss the dialog without navigating. Escape also dismisses it, and focus returns to the contact control.
 - `category-enter`: 44px square arrow link inset from the lower-right corner by the panel's horizontal text padding and `8px` from the bottom. The arrow shares this position in both preview states.
 
@@ -336,14 +339,18 @@ The Works section shares `--works-card-radius` (`16px`) between featured cards a
 | --- | --- |
 | Hero slogan entrance | `500ms`, cubic-bezier `(.22,.8,.3,1)`, fade/translate/blur |
 | Hero footer copy | Six keyword groups jitter one at a time with chromatic offsets. Pauses are `120–480ms` between groups and `450–900ms` between rounds. The loop runs while the copy is visible. |
-| Selected Works title | React Bits VariableProximity interpolates Montserrat weight from `700` to `900` with linear falloff within `100px` of the pointer. Letters and parentheses ease back to Bold as the pointer moves away. |
+| Selected Works title | React Bits TextPressure, local Montserrat. Idle weight runs `300–800`; pointer weight can reach `900`. Each letter holds its peak for `1000ms`, then eases back over `320ms`. Opacity follows weight from `0` at Light to `1` at the peak; fill stays `#000000`. Italic, width, stroke, and full-width letter distribution are disabled. Radius `.4`, smoothing `.85`, idle `pulse` at `.7` speed, and a `1.3s` click ripple. Offscreen and hidden-tab rendering pauses. |
 | About paper poster | The textured sheet curls at the grabbed edge and tilts with the direction and extent of the drag. It holds its drop position and angle as the bend and depth settle. Reduced motion uses a flat drag. |
+| About members | Two FlowingMenu rows, white with black names and top/middle/bottom black rules; width matches the orange banner. A black carried band with white roles and circular portraits flows between rows. Speed `55px/s`, duration `.65s`, stretch `1`, magnet `.4`, cursor follow `.4`, inset `18px`, radius `22px`, and dim inactive rows. No mount sweep; animation sleeps offscreen/in background tabs. Reduced motion positions a static band without scrolling or stretch. |
 | Navigation underline | `250ms` |
 | Contact pill | mostly `250ms`; selected internal white shine `650ms` |
 | Featured-card expansion | `480ms`, cubic-bezier `(.2,.8,.2,1)` |
 | Featured track | `58s` linear infinite; `42s` mobile |
 | Homepage category preview | `250ms` opacity transition |
+| Category image spotlight | React Bits SpotlightCard follows the pointer and brightens on press; no ambient loop. It pauses offscreen/in background tabs and responds immediately without flare under reduced motion. |
 | Contact sling | The icon stretches the band with the pointer while its label stays fixed. An armed release recoils and throws brand-orange particles before opening the project confirmation dialog. Click and keyboard activation open the dialog directly. |
+| Partner logos | React Bits LogoLoop, horizontal line traveling right at `100px/s`, `48px` logo height and `60px` gaps. A transparent `12%` mask fades each end. Hover/focus eases to a stop; leaving resumes. Dragging/swiping flings the strip. Logos fade/rise once on first visibility; no hover scale or brand-color changes. Offscreen/background rendering pauses; reduced motion stops automatic travel and entrance motion while retaining manual dragging. |
+| Contact email | FallingText drops seven explicit word tokens only when the pointer crosses or rests on the email text; the surrounding blank stage cannot initiate a fall. The full stage stays available for scatter and dragging after activation. It uses lazy-loaded Matter.js: gravity `1`, bounciness `.45`, scatter `.9`, stagger `.045s`, and a floor at the icon button's bottom. Sideways kicks scale within the available width; release timing, bounce, friction, and spin vary per token. Dragging and cursor pushes affect the tokens. After settling with the pointer away for `2s`, tokens return with a `760ms` staggered spring. Settled physics sleeps; offscreen/background physics pauses. Resizing restores the original line. Reduced motion keeps the email static and readable. |
 | Hero canvas | continuous requestAnimationFrame rotation |
 
 There is no centralized fast/standard/slow motion token set.
@@ -376,6 +383,8 @@ At `≤800px`, the implementation:
 - reduces the contact email size so the email and action fit on one row.
 
 There is no intermediate tablet-specific layout. Behavior on viewport widths near 800px should be treated as one breakpoint transition.
+
+The contact footer has a local `≤360px` adjustment: the sling label moves above its icon to make room for the complete email while retaining their shared bottom edge.
 
 ---
 

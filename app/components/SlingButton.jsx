@@ -34,6 +34,7 @@ export default function SlingButton({
   iconColor = '#18181b',
   accentColor = '#f5f5f5',
   wellColor = '#27272a',
+  showWell = true,
   bandColor = '#52525b',
   size = 56,
   strokeWidth = 3,
@@ -360,7 +361,7 @@ export default function SlingButton({
           <path ref={bandRef} className="sling-button__band" />
           <path ref={hotRef} className="sling-button__band sling-button__band--hot" />
         </g>
-        <circle className="sling-button__well" r={wellR} />
+        {showWell && <circle className="sling-button__well" r={wellR} />}
         <circle
           ref={arcRef}
           className="sling-button__arc"

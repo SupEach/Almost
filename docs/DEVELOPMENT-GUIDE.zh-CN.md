@@ -114,11 +114,11 @@
 | --- | --- | --- |
 | 精选作品区 | `.works`、`#works` | 整个作品展示区域 |
 | 横向精选条带 | `.featured-projects`、`.featured-track` | 位于标题上方，连续滚动展示精选作品 |
-| 精选作品标题 | `.works-heading`、`VariableProximity` | 条带下方的单行 `（Selected Works）`，使用 Montserrat Bold，括号为标题字号的 90%，和字母共用逐字增重效果 |
+| 精选作品标题 | `.works-heading`、`TextPressure` | 条带下方无括号的单行 `Selected Works`。Montserrat 正体、`-5%` 字距、自然居中；循环从 Light（300、全透明）到 ExtraBold（800、全不透明），顶峰停留 1 秒，鼠标交互可到 Heavy（900）；字色 `#000000`，减少动态效果时为不透明静态 Bold |
 | 滚动内容组 | `.featured-set` | 18 条记录重复渲染两组，用于无缝滚动 |
 | 精选作品卡片 | `.featured-card` | 页面内 article，当前没有详情链接 |
 | 卡片画面 | `.featured-visual`、`.art-*` | CSS 占位图形与编号、英文标题 |
-| 十二类面板组 | `.category-grid` | 全宽白底网格，桌面三列，窄屏两列，横向分隔线与竖线留空 |
+| 十二类面板组 | `.category-grid`、`SpotlightCard` | 全宽白底网格，桌面三列，窄屏两列，横向分隔线与竖线留空；全部 12 个图片预览带白色鼠标聚光、颗粒、边缘光和按压增强，文字状态不显示光效 |
 | 分类图像预览 | `.category-preview`、`.category-panel-art` | 桌面悬停或手机轻点时，图像铺满面板，采用精选卡片的 `16px` 圆角，箭头显示橙色圆形底 |
 | 分类面板信息 | `.category-panel-title`、`.category-panel-badges`、`.category-enter` | 英文标题、中文标签、案例数和进入所属分类页的箭头 |
 
@@ -128,17 +128,21 @@
 
 | 建议沟通名称 | 当前选择器 | 内容 |
 | --- | --- | --- |
-| 关于区 | `.about`、`#about` | 桌面一屏，包含可拖动的纸质海报、英文标语与横幅 |
+| 关于区 | `.about`、`#about` | 顶部为两行成员介绍，下接桌面一屏的纸质海报、英文标语与横幅构图 |
+| 合作品牌 Logo | `.partners`、`LogoLoop`、`partnerLogos` | 关于区之后、联系页脚之前，与联系区等宽；黑色 Logo 高 48px、间距 60px，以 100px/s 向右循环，悬停暂停、可拖动/滑动。当前四个技术品牌图标为占位，收到正式 SVG 后修改 `app/content/home.ts` 的 `partnerLogos` 路径和名称即可 |
+| 工作室成员 | `.about-team`、`FlowingMenu`、`teamMembers` | `leVel` / `Director` 与 `Pamela` / `Co-founder`，黑色分隔线，流动职务文字和圆形人物样图；数据及图片路径位于 `app/content/home.ts` |
 | 关于区纸质海报 | `.about-poster-stage`、`AboutPoster` | `src` 指向可替换的 `3:4` 图稿。海报随拖动倾斜和卷曲，松手后以落点角度缓慢舒展 |
 | 关于区标语 | `.about-slogan` | 海报下层居中的英文标语 `Complete Incomplete` |
 | 关于区横幅 | `.about-image` | 与首页顶部导航等宽。在 `app/globals.css` 更换 `public/about-image-placeholder.svg` 对应的图片路径 |
 | 联系页脚 | `.contact`、`#contact`、`.contact-row` | 白底联系行，下方分割线与版权落款 |
-| 邮件入口 | `.mail-link`、`.mail-tooltip` | 字号缩至原来的 60%，悬停或聚焦显示「与我联系↓」磨砂气泡，点击邮箱仍打开邮件草稿 |
-| 一键联系 | `.contact-sling`、`SlingButton` | 纯品牌橙图标，固定提示「拖动按钮→」。拉动后橙色粒子溅出，再打开确认弹窗；点击和键盘也可打开 |
+| 邮件入口 | `.mail-link`、`FallingText` | 邮箱及链接为 `studioalmostworks@gmail.com`，按 `studio/almost/works/@/gmail/./com` 七项掉落，静止时不加空格或斜杠，前三项为品牌橙。词元可拖动，底线与图标按钮下沿对齐，指针离开且静止 2 秒后复位；普通点击与键盘仍可发邮件，减少动态效果时保持静态 |
+| 一键联系 | `.contact-sling`、`SlingButton` | 橙色按钮使用 44px 的白色附件品牌图标 `brand-logo-icon.svg`，局部 CSS 滤镜保留原文件，`showWell=false` 去掉外圈。固定提示「DRAG ME →」与首屏底栏共用字体参数，间距桌面 24px / 窄屏 18px；≤360px 提示放到图标上方以容纳完整邮箱。拉动后橙色粒子溅出，再打开确认弹窗；点击和键盘也可打开 |
 | 项目确认弹窗 | `.contact-dialog`、`contactDialogRef` | 原生 dialog，文案「有项目？看看我最近有没有空。」；「没错」「点错了」及 Escape 仅关闭，暂不跳转 |
-| 页脚落款 | `.contact-meta`、`.contact-copyright`、`.contact-wordmark` | 左下 STUDIO ALMOST 版权、右下原版英文 SVG Logo，桌面宽 112px、紧凑布局宽 96px |
+| 页脚落款 | `.contact-meta`、`.contact-copyright`、`.contact-wordmark` | 左下两行 STUDIO ALMOST 版权、右下附件完整版橙色 `brand-logo-full-orange.svg`，桌面宽 200px、紧凑布局宽 168px，空间不足时等比缩小 |
 
 关于区标语、海报图稿路径和联系信息写在 `app/page.tsx`。
+
+成员临时照片为 `public/team/level-portrait-placeholder.jpg` 与 `public/team/pamela-portrait-placeholder.jpg`。收到正式照片后，可替换这两个文件或更新 `teamMembers` 的 `image` 路径。当前样图来自 Unsplash（[leVel 样图](https://images.unsplash.com/photo-1500648767791-00dcc994a43e)、[Pamela 样图](https://images.unsplash.com/photo-1494790108377-be9c29b29330)），用于布局预览，不代表成员本人。
 
 ### 3.5 分类页区块
 
@@ -392,7 +396,7 @@ Worktree 是 Git 提供的独立代码检出目录，可用于并行开发；它
 - 样式以 `app/globals.css` 中的手写选择器为主，虽加载 Tailwind v4，也不应直接切换一套新样式体系。
 - 现有五个根色彩变量为 `--ink`、`--paper`、`--muted`、`--line`、`--brand-orange`。间距和动画时间尚未全面变量化，不要假设已有完整 token 系统。
 - 共用 `.shell` 最大宽度 1440px；桌面两侧通常 40px，紧凑布局两侧 18px。
-- 当前宽度断点为 800px。测试平板、桌面和大屏，并不意味着必须新增三个断点。
+- 主布局断点为 800px；联系区在 ≤360px 时将拖动提示移至图标上方。测试平板、桌面和大屏，并不意味着必须新增三个断点。
 - 精选占位卡片和关于区海报的比例为 3:4。真实详情图片比例尚未建立规则，应按作品内容另行确定。
 - 顶部导航沿用半透明、圆角和模糊效果，作品区使用统一白底。
 - 橙色英文 Hero 标志静止时显示原始 SVG，交互时呈现 TechText 描边、拖动回弹和点击弹跳。标语解密与切山分别对应各自的模块。

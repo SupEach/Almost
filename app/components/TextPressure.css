@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/montserrat-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+.text-pressure { position:relative; width:100%; }
+.text-pressure-title { width:100%; margin:0; text-align:center; white-space:nowrap; user-select:none; }
+.text-pressure-title.is-flex { display:flex; justify-content:space-between; }
+.text-pressure-title > span { position:relative; display:inline-block; white-space:pre; transform-origin:50% 80%; }
+.text-pressure-title.is-stroke > span::after { content:attr(data-char); position:absolute; inset:0; color:transparent; -webkit-text-stroke:var(--text-pressure-stroke-width) var(--text-pressure-stroke-color); }
+
+@media (prefers-reduced-motion:reduce) {
+  .text-pressure-title > span { opacity:1 !important; transform:none !important; font-variation-settings:'wght' 700 !important; }
+}
