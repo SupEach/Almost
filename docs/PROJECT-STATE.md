@@ -4,7 +4,7 @@
 >
 > Keep it concise and current. Replace obsolete information instead of maintaining a chronological development diary.
 
-**Last updated:** 2026-11-11
+**Last updated:** 2026-11-12
 **Audit basis:** Local preview recovery, code modularization, type/lint checks, and production-rendered route tests.
 
 ---
@@ -111,7 +111,7 @@ Current sections and behavior:
 - continuously scrolling featured-work strip with 18 inline records duplicated for seamless motion, above the single-line `（Selected Works）` heading. The heading reaches `156px` on desktop, shares the English hero slogan's tracking, and uses Montserrat Bold. Its parentheses are `90%` of the title size and gain weight alongside the letters as the pointer approaches;
 - a white Works section with a full-width grid of twelve category panels below the featured strip. Row rules are inset horizontally and column rules stop at each panel's `16px` corner zones. Each panel has an English title, Chinese label, an `18` case-count placeholder, and an inset arrow to the existing parent category page. Desktop hover or compact-layout tap reveals the full-tile visual with the same `16px` corner radius as the featured cards and gives the arrow an orange circular background;
 - white About section that fills one desktop viewport, with a draggable paper poster layered over the English slogan and orange banner;
-- compact white contact footer with the email link and a frosted orange “一键联系” sling control that opens a draft to the same address;
+- compact white contact footer with an email link at 60% of its former size and a small frosted “与我联系↓” hover/focus bubble. The solid brand-orange sling control has a fixed “拖动按钮→” label; an armed release throws orange particles before opening the “有项目？看看我最近有没有空。” confirmation dialog. Click and keyboard activation also open the dialog. Both “没错” and “点错了” currently dismiss it without navigation. Copyright for STUDIO ALMOST and the small original English SVG wordmark sit below the divider;
 
 #### Locked Home baseline
 

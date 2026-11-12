@@ -29,8 +29,14 @@ test("homepage renders portfolio content and all category links", async () => {
   assert.match(about, /class="about-poster"[\s\S]*?about-poster-placeholder\.svg[\s\S]*?class="about-slogan shell" lang="en">Complete Incomplete<\/h2>[\s\S]*?class="about-image"/);
   assert.doesNotMatch(about, /ABOUT \/ 关于|DESIGN EXPERIENCE|BIOGRAPHY|CAPABILITIES|SELECTED COLLABORATIONS/);
   const contact = html.match(/<footer class="contact" id="contact">([\s\S]*?)<\/footer>/)?.[1] ?? "";
-  assert.match(contact, /href="mailto:levelfoto@gmail\.com">levelfoto@gmail\.com<\/a>/);
+  assert.match(contact, /href="mailto:levelfoto@gmail\.com"[^>]*>levelfoto@gmail\.com<\/a>/);
   assert.match(contact, /<button[^>]*class="sling-button__pad"[^>]*aria-label="一键联系"/);
+  assert.match(contact, /class="mail-tooltip"[^>]*role="tooltip">与我联系↓<\/span>/);
+  assert.match(contact, /class="sling-button__label"[^>]*>拖动按钮→<\/span>/);
+  assert.match(contact, /class="contact-copyright">© [\s\S]*?STUDIO ALMOST/);
+  assert.match(contact, /class="contact-wordmark" src="\/brand-logo-en-orange\.svg"/);
+  assert.match(contact, /<dialog[^>]*aria-labelledby="contact-dialog-message"><p id="contact-dialog-message">有项目？看看我最近有没有空。<\/p>/);
+  assert.match(contact, /<form[^>]*method="dialog"[^>]*><button type="submit" value="confirm">没错<\/button><button type="submit" value="cancel">点错了<\/button>/);
   assert.doesNotMatch(contact, /AVAILABLE FOR SELECTED PROJECTS|03 — CONTACT|让我们创造/);
   assert.doesNotMatch(html, /aria-label="作品分类入口"/);
   const panels = Array.from(html.matchAll(/<article class="category-panel">([\s\S]*?)<\/article>/g), match => match[1]);

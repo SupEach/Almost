@@ -107,6 +107,7 @@
   inset-inline-end: calc(100% + 12px);
   transform: translateY(-50%);
   white-space: nowrap;
+  pointer-events: none;
 }
 
 .sling-button__pad[data-held] {

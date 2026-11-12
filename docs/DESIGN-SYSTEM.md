@@ -93,7 +93,7 @@ Current CSS also requests `font-weight: 650` for several major headings. No 650 
 | Works display heading | `min(11.4cqi, 156px)`, weight 700, line-height `.8`, parentheses at `.9em` | `8.48cqi`, single line, parentheses at `.9em` |
 | About slogan | `min(9.7vw, 153px, 20svh)`, weight 500, line-height `.96`, tracking `-.05em` | `clamp(38px, 12.2vw, 90px)`, wraps as needed |
 | Category title | `clamp(72px, 11vw, 175px)`, weight 600, line-height `.78` | `clamp(60px, 19vw, 96px)` |
-| Contact email | `clamp(21px, 3vw, 40px)` | `clamp(15px, 4.4vw, 21px)` |
+| Contact email | `clamp(12.6px, 1.8vw, 24px)` | `clamp(9px, 2.64vw, 12.6px)` |
 | Biography lead | `clamp(40px, 5vw, 72px)`, line-height `1` | `34px` |
 | Body biography | `16px`, line-height `1.9` | `13px`, line-height `1.75` |
 | Small labels / metadata | Mostly `6px–13px` with increased letter spacing | Mostly `7px–13px` |
@@ -275,7 +275,8 @@ A reusable project-detail layout is **Unknown / not implemented**.
 - Global anchors inherit color and remove underlines.
 - Desktop navigation links show a dark animated underline on hover.
 - Category panel arrows sit on an orange circle while their panel preview is active.
-- The white contact footer places the mail link on the left and the frosted orange sling control on the right of a shared row with a `2px` dark bottom rule.
+- The white contact footer places the mail link on the left and the solid orange sling control on the right of a shared row with a `2px` dark bottom rule. The email has no hover underline; hover or keyboard focus reveals the small frosted “与我联系↓” bubble above it. The link retains a `44px` minimum hit height.
+- Below the rule, small STUDIO ALMOST copyright text sits left and the original English SVG wordmark sits right, at `112px` wide on desktop and `96px` on compact layouts.
 
 ### Focus
 
@@ -293,7 +294,8 @@ The contact pill shares its hover and focus-visible visual state. Category panel
 - `contact-pill`: rounded “下一座山” control with active, hover, focus, pressed, and 650ms internal white-shine states; its width is 116px desktop and 104px mobile while text sizing remains unchanged.
 - `menu-button`: text-only compact-layout navigation control.
 - `round-link`: circular orange anchor centered under the studio copy in the hero footer. The link scrolls to `#works`.
-- `SlingButton`: circular frosted contact control with a brand-orange face, a mail icon, and a visible “一键联系” label.
+- `SlingButton`: solid brand-orange circular contact control with a mail icon and a fixed `11px` “拖动按钮→” label outside its moving icon wrapper. Its accessible name remains “一键联系”.
+- Contact confirmation uses a native modal dialog: a white `16px`-radius surface, a dim backdrop, the prompt “有项目？看看我最近有没有空。”, and “没错” / “点错了” buttons. Both choices currently dismiss the dialog without navigating. Escape also dismisses it, and focus returns to the contact control.
 - `category-enter`: 44px square arrow link inset from the lower-right corner by the panel's horizontal text padding and `8px` from the bottom. The arrow shares this position in both preview states.
 
 There is no generic reusable button component or variant API.
@@ -341,7 +343,7 @@ The Works section shares `--works-card-radius` (`16px`) between featured cards a
 | Featured-card expansion | `480ms`, cubic-bezier `(.2,.8,.2,1)` |
 | Featured track | `58s` linear infinite; `42s` mobile |
 | Homepage category preview | `250ms` opacity transition |
-| Contact sling | The icon stretches the band with the pointer. An armed release recoils and throws brand-orange particles before opening the mail draft. Click and keyboard activation open the draft directly. |
+| Contact sling | The icon stretches the band with the pointer while its label stays fixed. An armed release recoils and throws brand-orange particles before opening the project confirmation dialog. Click and keyboard activation open the dialog directly. |
 | Hero canvas | continuous requestAnimationFrame rotation |
 
 There is no centralized fast/standard/slow motion token set.
@@ -353,7 +355,7 @@ At `prefers-reduced-motion: reduce`:
 - smooth scrolling is disabled;
 - CSS animation and transition are disabled globally.
 - The hero footer and Selected Works title display as static text.
-- The contact sling opens the draft with an immediate return and no particle burst under reduced motion.
+- The contact sling opens the confirmation dialog with an immediate return and no particle burst under reduced motion.
 
 The Three.js hero loop is JavaScript-driven and does not currently check reduced-motion preference, so it continues to render. Whether it should stop is **To confirm**.
 

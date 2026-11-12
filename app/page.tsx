@@ -26,6 +26,7 @@ export default function Home() {
   const mountainButtonTimer = useRef<number | null>(null);
   const heroStageRef = useRef<HTMLDivElement>(null);
   const worksHeadingRef = useRef<HTMLHeadingElement>(null);
+  const contactDialogRef = useRef<HTMLDialogElement>(null);
   const currentSceneIndex = graphicVariation % mountainScenes.length;
   const currentScene = mountainScenes[currentSceneIndex];
   const currentSlogan = heroSlogans[graphicVariation % heroSlogans.length];
@@ -196,23 +197,40 @@ export default function Home() {
       <footer className="contact" id="contact">
         <div className="shell contact-inner">
           <div className="contact-row">
-            <a className="mail-link" href={contactHref}>{contactEmail}</a>
+            <span className="mail-entry">
+              <a className="mail-link" href={contactHref} aria-describedby="contact-email-hint">{contactEmail}</a>
+              <span className="mail-tooltip" id="contact-email-hint" role="tooltip">与我联系↓</span>
+            </span>
             <SlingButton
               className="contact-sling"
-              label="一键联系"
+              label="拖动按钮→"
               ariaLabel="一键联系"
-              hint="点击或按回车打开邮件草稿，也可拉动图标后松手。"
+              hint="拉动图标后松手打开项目确认弹窗，也可点击或按回车。"
               padColor="var(--brand-orange)"
               accentColor="var(--brand-orange)"
               iconColor="var(--ink)"
               wellColor="color-mix(in srgb, var(--brand-orange) 13%, white)"
               bandColor="color-mix(in srgb, var(--brand-orange) 45%, white)"
-              onSend={() => { window.location.href = contactHref; }}
+              onSend={() => {
+                const dialog = contactDialogRef.current;
+                if (dialog && !dialog.open) dialog.showModal();
+              }}
             >
               <HugeiconsIcon icon={MailSend01Icon} size={24} strokeWidth={2.2} aria-hidden="true" />
             </SlingButton>
           </div>
+          <div className="contact-meta">
+            <p className="contact-copyright">© {new Date().getFullYear()} STUDIO ALMOST<span>ALL RIGHTS RESERVED.</span></p>
+            <img className="contact-wordmark" src={heroWordmark} alt="Studio Almost" width={856} height={120} />
+          </div>
         </div>
+        <dialog className="contact-dialog" ref={contactDialogRef} aria-labelledby="contact-dialog-message">
+          <p id="contact-dialog-message">有项目？看看我最近有没有空。</p>
+          <form method="dialog" className="contact-dialog-actions">
+            <button type="submit" value="confirm">没错</button>
+            <button type="submit" value="cancel">点错了</button>
+          </form>
+        </dialog>
       </footer>
     </main>
   );

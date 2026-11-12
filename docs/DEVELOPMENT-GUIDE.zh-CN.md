@@ -132,9 +132,11 @@
 | 关于区纸质海报 | `.about-poster-stage`、`AboutPoster` | `src` 指向可替换的 `3:4` 图稿。海报随拖动倾斜和卷曲，松手后以落点角度缓慢舒展 |
 | 关于区标语 | `.about-slogan` | 海报下层居中的英文标语 `Complete Incomplete` |
 | 关于区横幅 | `.about-image` | 与首页顶部导航等宽。在 `app/globals.css` 更换 `public/about-image-placeholder.svg` 对应的图片路径 |
-| 联系页脚 | `.contact`、`#contact`、`.contact-row` | 白底单行收尾区 |
-| 邮件入口 | `.mail-link` | 点击邮箱地址打开邮件草稿 |
-| 一键联系 | `.contact-sling`、`SlingButton` | 品牌橙磨砂图标，点击、键盘激活或拉动后松手均可打开邮件草稿 |
+| 联系页脚 | `.contact`、`#contact`、`.contact-row` | 白底联系行，下方分割线与版权落款 |
+| 邮件入口 | `.mail-link`、`.mail-tooltip` | 字号缩至原来的 60%，悬停或聚焦显示「与我联系↓」磨砂气泡，点击邮箱仍打开邮件草稿 |
+| 一键联系 | `.contact-sling`、`SlingButton` | 纯品牌橙图标，固定提示「拖动按钮→」。拉动后橙色粒子溅出，再打开确认弹窗；点击和键盘也可打开 |
+| 项目确认弹窗 | `.contact-dialog`、`contactDialogRef` | 原生 dialog，文案「有项目？看看我最近有没有空。」；「没错」「点错了」及 Escape 仅关闭，暂不跳转 |
+| 页脚落款 | `.contact-meta`、`.contact-copyright`、`.contact-wordmark` | 左下 STUDIO ALMOST 版权、右下原版英文 SVG Logo，桌面宽 112px、紧凑布局宽 96px |
 
 关于区标语、海报图稿路径和联系信息写在 `app/page.tsx`。
 

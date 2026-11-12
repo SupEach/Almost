@@ -312,7 +312,7 @@ export default function SlingButton({
           power.current = clamp((Math.min(p, POWER_CAP) - 1) / (POWER_CAP - 1), 0, 1);
           dotPending.current = true;
           dotTimer.current = setTimeout(launchDot, 150);
-          // Give the burst time to appear before the action can switch apps.
+          // Let the orange burst appear before invoking the contact action.
           sendTimer.current = setTimeout(() => {
             sendTimer.current = undefined;
             onSend?.();
@@ -380,6 +380,7 @@ export default function SlingButton({
           aria-hidden="true"
         />
       ))}
+      {label && <span className="sling-button__label" aria-hidden="true">{label}</span>}
       <motion.span className="sling-button__move" style={{ transform: padT }}>
         <button
           ref={padRef}
@@ -405,7 +406,6 @@ export default function SlingButton({
             if (!disabled && !sendTimer.current && !handled && (!pointerClick || tapSends)) onSend?.();
           }}
         >
-          {label && <span className="sling-button__label" aria-hidden="true">{label}</span>}
           <span className="sling-button__face">
             <span ref={iconRef} className="sling-button__icon">
               {children ?? <HugeiconsIcon icon={ArrowUp02Icon} size={Math.round(size * 0.4)} strokeWidth={2.2} />}
