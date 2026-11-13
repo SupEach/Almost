@@ -66,6 +66,7 @@ const TechText = ({
   guides = false,
   className = '',
   artwork = '',
+  textElementRef = /** @type {import('react').RefObject<HTMLElement | null> | null} */ (null),
   drawingAreaRef = /** @type {import('react').RefObject<HTMLElement | null> | null} */ (null),
   style = undefined
 }) => {
@@ -115,6 +116,8 @@ const TechText = ({
     if (!container || !canvas || !ctx || !scratchCtx) return undefined;
     const drawingArea = drawingAreaRef?.current;
     const coordinateArea = drawingArea ?? container;
+    const textElement = textElementRef?.current;
+    const overlay = Boolean(artwork || textElement);
 
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const artworkRequest = new AbortController();
@@ -226,8 +229,8 @@ const TechText = ({
           shown: sameGlyph ? kept.shown : 1,
           cells: null,
           assembled: 0,
-          fill: sprite(s, next, base, false, ink),
-          dashes: sprite(s, next, base, true, ink)
+          fill: sprite(s, next, base, false, base.ink ?? ink),
+          dashes: sprite(s, next, base, true, base.ink ?? ink)
         };
       });
       if (dragging >= 0 && glyphs[dragging]?.index !== previous[dragging]?.index) dragging = -1;
@@ -275,6 +278,44 @@ const TechText = ({
       return next;
     };
 
+    // Bind the effect to existing HTML glyphs without changing the resting
+    // font, baseline, spacing, or per-character colors.
+    const layoutTextElement = (s, ink) => {
+      const elements = [...textElement.querySelectorAll('[data-tech-glyph]')];
+      const baselineElement = textElement.querySelector('[data-tech-baseline]');
+      if (!elements.length || !baselineElement) return null;
+      const area = coordinateArea.getBoundingClientRect();
+      const baseline = baselineElement.getBoundingClientRect().top - area.top;
+      const size = parseFloat(getComputedStyle(textElement).fontSize);
+      setFont(scratchCtx, s, size);
+      const shapes = elements.map((element, index) => {
+        const char = element.getAttribute('data-tech-glyph');
+        const rect = element.getBoundingClientRect();
+        const metrics = scratchCtx.measureText(char);
+        const x = rect.left - area.left;
+        return {
+          char, index, x, ink: getComputedStyle(element).color,
+          box: {
+            x1: x - metrics.actualBoundingBoxLeft,
+            y1: baseline - metrics.actualBoundingBoxAscent,
+            x2: x + metrics.actualBoundingBoxRight,
+            y2: baseline + metrics.actualBoundingBoxDescent
+          }
+        };
+      });
+      const top = Math.min(...shapes.map(glyph => glyph.box.y1));
+      const bottom = Math.max(...shapes.map(glyph => glyph.box.y2));
+      const next = {
+        size, baseline, top, bottom,
+        left: Math.min(...shapes.map(glyph => glyph.box.x1)),
+        right: Math.max(...shapes.map(glyph => glyph.box.x2)),
+        lines: [{ y: top, label: 'cap height' }, { y: baseline, label: 'baseline' }],
+        bands: [{ y0: top - 2, y1: bottom + 2, up: true, order: 0 }]
+      };
+      setGlyphs(s, next, shapes, ink);
+      return next;
+    };
+
     const ensureLayout = (s, ink) => {
       const key = [
         s.text,
@@ -296,6 +337,10 @@ const TechText = ({
       layoutKey = key;
       if (artwork) {
         word = layoutArtwork(s, ink);
+        return word;
+      }
+      if (textElement) {
+        word = layoutTextElement(s, ink);
         return word;
       }
       const wanted = fontFor(s, 64);
@@ -761,7 +806,7 @@ const TechText = ({
       raf = 0;
       const s = settingsRef.current;
       if (!s || (artwork && !vector)) return;
-      if (artwork && motionPreference.matches) {
+      if (overlay && motionPreference.matches) {
         delete container.dataset.active;
         container.style.cursor = '';
         cursor = '';
@@ -978,7 +1023,7 @@ const TechText = ({
         (guideAlpha > 0.005 && guideAlpha < 0.995) ||
         Math.abs(presence - (s.reveal === 'area' && active && dragging < 0 ? 1 : 0)) > 0.002 ||
         (frame.alpha > 0.01 && frame.alpha < 0.99);
-      if (artwork) container.toggleAttribute('data-active', active || settling);
+      if (overlay) container.toggleAttribute('data-active', active || settling);
       if ((active || settling) && visible && alive) raf = requestAnimationFrame(tick);
     };
 
@@ -1069,6 +1114,7 @@ const TechText = ({
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
     if (drawingArea) resizeObserver.observe(drawingArea);
+    if (textElement) resizeObserver.observe(textElement);
     window.addEventListener('resize', resize, { passive: true });
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
@@ -1116,10 +1162,10 @@ const TechText = ({
       container.removeEventListener('pointercancel', onUp);
       container.removeEventListener('pointerleave', onLeave);
     };
-  }, [artwork, drawingAreaRef]);
+  }, [artwork, drawingAreaRef, textElementRef]);
 
   return (
-    <div ref={containerRef} className={`tech-text ${className}`.trim()} style={style} role={artwork ? undefined : "img"} aria-label={artwork ? undefined : text} aria-hidden={artwork ? true : undefined}>
+    <div ref={containerRef} className={`tech-text ${className}`.trim()} style={style} role={artwork || textElementRef ? undefined : "img"} aria-label={artwork || textElementRef ? undefined : text} aria-hidden={artwork || textElementRef ? true : undefined}>
       <canvas ref={canvasRef} className="tech-text-canvas" />
     </div>
   );

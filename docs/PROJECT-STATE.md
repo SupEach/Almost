@@ -4,14 +4,14 @@
 >
 > Keep it concise and current. Replace obsolete information instead of maintaining a chronological development diary.
 
-**Last updated:** 2026-11-12
-**Audit basis:** User-approved homepage finalization, source/asset audit, responsive browser checks, type checking, and production-rendered route tests.
+**Last updated:** 2026-11-13
+**Audit basis:** User-approved Home and Works-overview designs, responsive browser checks, type checking, and production-rendered route tests.
 
 ---
 
 ## 1. Project Summary
 
-Studio Website is a personal portfolio website for a professional visual / graphic designer. The current implementation presents a single-page studio introduction and six category landing pages. Portfolio project-detail pages and a populated project archive do not currently exist.
+Studio Website is a personal portfolio website for a professional visual / graphic designer. The current implementation presents a single-page studio introduction, a standalone Works overview using the existing placeholder project records, and six category landing pages. Portfolio project-detail pages do not currently exist.
 
 The six canonical categories defined by project policy remain:
 
@@ -73,6 +73,7 @@ Use the [page and module naming reference](PAGE-MODULE-MAP.zh-CN.md) when descri
 | Route | Current implementation |
 | --- | --- |
 | `/` | Home page containing hero, selected works, category navigation, about, and contact sections. |
+| `/works` | Overview design finalized on 2026-11-13: twelve-category OptionWheel plus All and a Masonry gallery using existing Home artwork. |
 | `/works/[slug]` | Dynamic category landing page. It is not a project-detail route. |
 | `/experiments/mountain-footer` (local only) | Untracked footer study, excluded from the approved homepage snapshot and GitHub submission. Not linked from Home. |
 
@@ -87,9 +88,9 @@ Supported category slugs:
 
 Additional routing facts:
 
-- `#home`, `#works`, `#about`, and `#contact` are homepage anchors, not standalone routes.
+- `#home`, `#works`, `#about`, and `#contact` remain homepage anchors. The primary Works navigation opens `/works`; the hero down arrow still opens `#works`.
 - Unsupported category slugs render an in-page “CATEGORY NOT FOUND” state; the route does not call the framework `notFound()` helper. HTTP status behavior is **To confirm**.
-- No standalone project index, project-detail, about, resume, or application API route exists under `app/`.
+- No project-detail, standalone about, resume, or application API route exists under `app/`.
 - `examples/d1/app/api/notes/route.ts` is example code outside the active `app/` route tree.
 - Authentication paths described in `README.md` are hosting-platform-owned paths, not application route files.
 
@@ -103,7 +104,7 @@ Additional routing facts:
 
 Current sections and behavior:
 
-- fixed global navigation with desktop anchor links and a mobile menu;
+- fixed global navigation with a Works link to `/works`, About/Contact anchors, and a mobile menu;
 - hero with a Three.js generative wireframe graphic driven by 36 deterministic, peak-preserving terrain profiles: 12 based on well-known real mountains and 24 original mountain variations;
 - the orange `STUDIO ALMOST,` hero wordmark uses its original SVG contours for TechText interaction. Hover reveals a dashed outline, selection frame, size label, and specks per glyph. Dragging keeps the full glyph inside the hero, then springs it back on release. Clicking sends a ripple through adjacent glyphs. The original SVG is shown at rest and with reduced motion;
 - hero quotation credits display the author and nationality only, without era or century details;
@@ -137,12 +138,21 @@ The complete Home page is the user-approved final design as of **2026-11-12**. I
 
 ### Work browsing
 
-**Status:** Partially implemented on the homepage.
+**Status:** Overview design approved and finalized on **2026-11-13**; real media and detail pages pending.
+
+The fixed backup branch is `codex/works-overview-final-2026-11-13`. See [the overview backup and recovery guide](WORKS-OVERVIEW-FINAL-BACKUP-2026-11-13.zh-CN.md) for source scope, local ZIP/bundle archives, checksums, and recovery steps. The separate Home snapshot remains `codex/homepage-final-2026-11-12`.
 
 - Category links route to six category landing pages.
 - The twelve homepage panels split each category into two visual entries. Their arrows use the same six landing routes.
 - Category pages currently end with a `PROJECT ARCHIVE` placeholder stating that project content will be added later.
-- There is no populated archive, category filtering of project records, or standalone work index.
+- `/works` uses a sticky 25% OptionWheel sidebar and a 75% Masonry area on desktop, with exactly three equal-width gallery columns. At `≤800px`, the wheel sits above the gallery and columns adapt to available width with the existing `240px` target.
+- The wheel reuses the twelve `homeCategoryPanels` labels and inserts All between Graphics and Books. Initial position is All with no selected/highlighted option. Any wheel interaction enables selection styling; returning to All displays orange “全部”. The All gallery uses the existing 18 `featuredProjects` in the same priority order as Home's Selected Works; no additional archive records have been supplied.
+- Each of the twelve category views contains nine layout-preview cards: the existing three parent-group records repeated in square `1:1`, portrait `3:4`, and landscape `4:3` formats. These variants do not add or alter real portfolio records. All retains the original eighteen featured records in Home order, using the same three aspect ratios.
+- The sidebar keeps only the Works heading and left-aligned scroll hint. Wheel labels are 120% of the initial overview size; selected labels display Chinese while other labels remain English. Labels share an exact circular trajectory without individual horizontal clamps; one responsive inset positions the circle, and whole labels fade before crossing any edge. The current preset uses spacing `1.4`, curve `1`, tilt `6°`, blur `.5px/step`, fade `.2`, smoothing `300ms`, preferred inset `96px`, and continuous looping. Idle text is black; selection retains brand orange.
+- The Works title uses Kanit `500`, zero letter spacing, black letters, and an orange period; its visible top aligns with the gallery category heading on desktop. It reuses the hero wordmark's TechText outline, selection frame, specks, drag/return, and click response. An optional DOM-text binding measures the existing glyphs and baseline so the canvas preserves their resting shapes, spacing, and colors. TextPressure remains exclusive to Home's Selected Works heading.
+- Category switches animate cards by their actual masonry column, left → middle → right, with `150ms` column delays. Each column exits left over `.55s`. The leading column travels a shorter distance (20% of card width, capped at `80px` and available viewport space) and fades completely by 80% of that duration. Exit overflow stays visible with no fixed edge mask, preserving the full rounded card silhouette; this also applies to single-column mobile. After exit completes, the next category enters from the right over `.9s` per column, traveling one card width plus the column gap. Entry opacity reaches full visibility early so horizontal movement remains clear; only entry uses a soft mask in the outer gutters. Rapid selection resolves to the latest category without accumulating galleries. Only initially visible cards use the category entrance; cards reached later retain the original `.45s` bottom entrance and `.035s` stagger. Reduced motion makes transitions immediate. The English gallery heading still uses FallingText; the count remains orange digits, and the footer matches Home's copyright content.
+- Click, scroll, drag, and arrow/Home/End keys select categories. Existing records only identify six parent groups, so each pair of child categories temporarily shows its parent's records. Precise twelve-category assignments await supplied content.
+- Cards open a native dialog stating that detail-page design is deferred. No detail route or project-slug scheme has been introduced. Approval covers the overview design and interaction; the repeated preview artwork is not final portfolio content.
 
 ### Project detail
 
@@ -168,6 +178,9 @@ Content lives under app/content and animation components under app/components. C
 
 - `RootLayout` in `app/layout.tsx` — shared HTML shell and site metadata.
 - `Home` in `app/page.tsx` — the complete homepage.
+- `SiteNavigation` in `app/components/SiteNavigation.tsx` — shared Home/Works navigation, preserving Home styling and mountain controls. Works receives an orange current-page state and omits the mountain control; Home retains it.
+- `WorksOverview` in `app/works/WorksOverview.tsx` — overview composition, filtering, and deferred-detail dialog, with local styles in `app/works/works.css`.
+- `OptionWheel` / `Masonry` in `app/components/` — supplied React Bits JS/CSS components. Wheel adds keyboard/focus semantics, reduced motion, responsive row measurement, and an unselected All works state. Masonry adds a render slot for Home CSS artwork, same-tab links, lazy secondary images, and refresh-safe animation cleanup. Overview disables lightbox and card reordering.
 - `GenerativeCanvas` in `app/components/GenerativeCanvas.tsx` — lazy-loaded Three.js scene with resize guards, cleanup, and WebGL initialization failure isolation.
 - `LanguageDecryptedText` in `app/components/LanguageDecryptedText.tsx` — language-specific slogan animation.
 - `TextPressure` in `app/components/TextPressure.jsx` — Selected Works pressure, pulse, and ripple animation. The earlier `VariableProximity` component remains available but is no longer used by Home.
@@ -181,7 +194,7 @@ Content lives under app/content and animation components under app/components. C
 - `CategoryPage` in `app/works/[slug]/page.tsx` — shared template for all six category slugs.
 - `app/chatgpt-auth.ts` — reusable hosting-header authentication helpers; no current page imports them.
 
-Navigation is not a shared React component: the homepage and category template contain separate navigation markup. Global presentation rules are shared through `app/globals.css` and the `.shell` layout class.
+Home and Works share `SiteNavigation`. The legacy category template retains separate navigation markup. Global presentation rules are shared through `app/globals.css` and `.shell`; Home-specific selectors remain unchanged.
 
 ---
 
@@ -213,7 +226,7 @@ Current structural facts:
 - `db/schema.ts` is intentionally empty; `.openai/hosting.json` declares no D1 or R2 binding.
 - Featured/profile values and slogans live in app/content/home.ts; terrain records live in app/content/mountains.ts.
 - Removed the unused six-record projects array; rendered featured content is preserved.
-- Current featured records contain metadata and CSS artwork keys, not project media paths or detail-page slugs.
+- Current featured records contain metadata and CSS artwork keys, not project media paths or detail-page slugs. The overview derives layout dimensions and parent-group filtering from these records without inventing subcategory metadata.
 
 ---
 
@@ -267,7 +280,7 @@ Verified asset behavior:
 - Preview restored at http://127.0.0.1:3000/. Initially no process listened on port 3000; default localhost startup bound only to IPv6 ::1. Vite now uses explicit IPv4 and a strict port.
 - Type checking passes, including optional Cloudflare DB binding declarations.
 - Finalization validation runs type checking and the production build/rendered-route tests. Lint was not rerun for this finalization; earlier lint notes are historical.
-- Production build and 10 rendered-route tests pass. Obsolete starter skeleton tests were replaced.
+- Production build and 11 rendered-route tests pass, including the Works overview and Home navigation. Obsolete starter skeleton tests were replaced.
 - Homepage, categories, and animation code are separated without a visual redesign. Three.js is loaded through a lazy component; its chunk still exceeds the build advisory size threshold.
 - Unknown slugs including constructor and __proto__ now reach the existing fallback instead of resolving inherited object properties. The existing in-page fallback still returns HTTP 200.
 - .pnpm-store and TypeScript build info are now ignored. The previously tracked store file has not been removed from Git.

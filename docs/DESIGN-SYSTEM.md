@@ -4,7 +4,7 @@
 >
 > Values documented here describe the code as it exists. They are not a redesign proposal.
 
-**Last audited:** 2026-11-12
+**Last audited:** 2026-11-13
 **Implementation source:** `app/globals.css`, `app/page.tsx`, `app/works/[slug]/page.tsx`, `app/layout.tsx`, and assets under `public/`.
 
 ---
@@ -186,7 +186,7 @@ From 801px upward, the interface uses the same layout rules with fluid `clamp()`
 
 - Fixed near the top of the viewport: `top: 14px`, `left/right: 18px`, height `64px`.
 - Rounded translucent white surface with blur, border, gradient, and shadow.
-- Chinese brand logo aligns left, Works/About/Contact anchors center, and the 116px-wide “下一座山” control aligns right.
+- Chinese brand logo aligns left, Works/About/Contact links center, and the 116px-wide “下一座山” control aligns right. Works opens `/works`; About/Contact use Home anchors.
 - Desktop links use an animated underline on hover.
 
 ### Mobile
@@ -201,7 +201,7 @@ From 801px upward, the interface uses the same layout rules with fluid `clamp()`
 - Use a separate fixed navigation implementation at the same general visual style.
 - Provide the Chinese logo and an “ALL WORKS” link back to `/#works`.
 
-There is no current-route active state because primary navigation targets homepage anchors. Navigation markup is not currently a reusable component.
+Home and the Works overview share `SiteNavigation`. On `/works`, Works uses brand orange and `aria-current="page"`; its hover underline inherits orange. About/Contact return to Home anchors. The mountain control appears only on Home and retains its existing behavior. Legacy category navigation remains separate.
 
 ---
 
@@ -227,6 +227,11 @@ There is no current-route active state because primary navigation targets homepa
 - Each of the twelve image previews includes the same SpotlightCard overlay: white light, `.15` intensity, `360px` radius, `.7` softness, `.6` edge glow, `80px` proximity, `.3` smoothing, `.8` grain, press flare, and no ambient drift. The overlay inherits the `16px` corners, adds no surface/shadow/padding, and leaves pointer targets intact. It appears only with the image. Keyboard focus lights the image center; reduced motion removes lag and flare.
 - A fine hover pointer reveals the preview on desktop. Compact and touch layouts toggle the preview by tapping the tile, and a keyboard user can toggle it with Enter or Space. A new tap selection closes the previous one.
 - Each count displays the provisional value `18`. The arrow links to the corresponding parent category page.
+
+### Works overview gallery
+
+- At widths above `800px`, the gallery uses three equal-width masonry columns. Compact layouts retain automatic columns with a `240px` target width.
+- Covers use three aspect ratios: square `1:1`, portrait `3:4`, and landscape `4:3`. Each frame scales proportionally to the column width, with `16px` gaps and `16px` corners. These rules are scoped to the overview and do not change Home's featured cards.
 
 ---
 
@@ -343,6 +348,7 @@ The Works section shares `--works-card-radius` (`16px`) between featured cards a
 | About paper poster | The textured sheet curls at the grabbed edge and tilts with the direction and extent of the drag. It holds its drop position and angle as the bend and depth settle. Reduced motion uses a flat drag. |
 | About members | Two FlowingMenu rows, white with black names and top/middle/bottom black rules; width matches the orange banner. A black carried band with white roles and circular portraits flows between rows. Speed `55px/s`, duration `.65s`, stretch `1`, magnet `.4`, cursor follow `.4`, inset `18px`, radius `22px`, and dim inactive rows. No mount sweep; animation sleeps offscreen/in background tabs. Reduced motion positions a static band without scrolling or stretch. |
 | Navigation underline | `250ms` |
+| Works overview title | Reuses the hero wordmark's TechText interaction on the original DOM glyphs. Resting Kanit `500`, zero letter spacing, black text, and an orange period; the visible top aligns with the desktop gallery heading. Hover shows dashed outlines and a selection frame, click produces a ripple, and dragging returns to the original position. Reduced motion retains native text. |
 | Contact pill | mostly `250ms`; selected internal white shine `650ms` |
 | Featured-card expansion | `480ms`, cubic-bezier `(.2,.8,.2,1)` |
 | Featured track | `58s` linear infinite; `42s` mobile |

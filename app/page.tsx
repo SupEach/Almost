@@ -13,6 +13,7 @@ import SpotlightCard from "./components/SpotlightCard";
 import StudioMeta from "./components/StudioMeta";
 import TechText from "./components/TechText";
 import TextPressure from "./components/TextPressure";
+import SiteNavigation from "./components/SiteNavigation";
 
 const GenerativeCanvas = lazy(() => import("./components/GenerativeCanvas"));
 const heroWordmark = "/brand-logo-en-orange.svg";
@@ -22,7 +23,6 @@ const contactEmailTokens = ["studio", "almost", "works", "@", "gmail", ".", "com
 const contactHref = `mailto:${contactEmail}`;
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [graphicVariation, setGraphicVariation] = useState(0);
   const [mountainButtonActive, setMountainButtonActive] = useState(false);
   const [previewedCategory, setPreviewedCategory] = useState<string | null>(null);
@@ -46,23 +46,7 @@ export default function Home() {
 
   return (
     <main className="home">
-      <nav className="nav shell">
-        <a href="#home" className="brand" aria-label="薛譞杰作品集首页">
-          <img src="/brand-logo-cn.svg" alt="" />
-        </a>
-        <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label={menuOpen ? "关闭导航" : "打开导航"}>{menuOpen ? "关闭" : "菜单"}</button>
-        <div className={`nav-links ${menuOpen ? "open" : ""}`}>
-          <a href="#works" onClick={() => setMenuOpen(false)}>Works</a>
-          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
-        </div>
-        <button
-          type="button"
-          className={`contact-pill ${mountainButtonActive ? "is-selected" : ""}`}
-          onClick={showNextMountain}
-          aria-label="切换至下一座山"
-        >下一座山</button>
-      </nav>
+      <SiteNavigation onNextMountain={showNextMountain} mountainButtonActive={mountainButtonActive} />
 
       <section className="hero" id="home">
 

@@ -1,8 +1,10 @@
 # Studio Almost — 不周山设计作品集
 
-React / TypeScript / vinext 网站，目前包含首页和六个作品分类落地页。
+React / TypeScript / vinext 网站，目前包含首页、作品总览页和六个作品分类落地页。
 
 首页设计已于 **2026-11-12** 定稿。参见 [页面与模块地图](docs/PAGE-MODULE-MAP.zh-CN.md)、[素材数量与尺寸清单](docs/HOMEPAGE-ASSET-INVENTORY-2026-11-12.zh-CN.md)、[定稿备份与回滚说明](docs/HOMEPAGE-FINAL-BACKUP-2026-11-12.zh-CN.md)。固定备份分支为 `codex/homepage-final-2026-11-12`。
+
+作品总览页 `/works` 设计已于 **2026-11-13** 定稿。参见 [作品总览定稿备份与恢复说明](docs/WORKS-OVERVIEW-FINAL-BACKUP-2026-11-13.zh-CN.md)。固定备份分支为 `codex/works-overview-final-2026-11-13`；正式作品素材与详情页另行完成。
 
 ## 本地预览
 
@@ -21,7 +23,7 @@ pnpm dev
 
 - `pnpm lint`：代码规范检查。
 - `pnpm typecheck`：TypeScript 类型检查。
-- `pnpm test`：构建并验证首页、六个分类页和未知分类回退，共 10 项。
+- `pnpm test`：构建并验证首页、作品总览、六个分类页和未知分类回退，共 11 项。
 - `pnpm check`：依次执行全部检查。
 - `pnpm build` / `pnpm start`：生产构建 / 本地生产预览。
 - `pnpm db:generate`：修改数据库 schema 后生成迁移。

@@ -14,6 +14,7 @@ test("homepage renders portfolio content and all category links", async () => {
   assert.match(response.headers.get("content-type") ?? "", /^text\/html/);
   const html = await response.text();
   assert.match(html, /XJ Portfolio/);
+  assert.match(html, /href="\/works"[^>]*>Works<\/a>/);
   for (const id of ["home", "works", "about", "contact"]) {
     assert.ok(html.includes(`id="${id}"`), `Missing ${id} section`);
   }
@@ -58,6 +59,24 @@ test("homepage renders portfolio content and all category links", async () => {
     assert.match(panel, /class="category-panel-count">18<\/span>/);
     assert.match(panel, /class="category-enter" href="\/works\/[^"]+"[^>]*>→<\/a>/);
   }
+});
+
+test("works overview starts on an unselected All entry between the twelve categories", async () => {
+  const response = await render("/works");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /href="\/works" aria-current="page"/);
+  assert.match(html, /href="\/#about"/);
+  assert.match(html, /href="\/#contact"/);
+  assert.match(html, /id="works-gallery-title" aria-label="All works"/);
+  assert.match(html, /<h1[^>]*aria-label="Works\."/);
+  assert.doesNotMatch(html, /class="text-pressure-title"/);
+  assert.deepEqual(Array.from(html.matchAll(/role="option"[^>]*>([^<]+)<\/div>/g), match => match[1]), [
+    "Branding", "Logos", "Events", "Exhibitions", "Posters", "Graphics",
+    "All", "Books", "Music", "Packaging", "Products", "Commercial", "Web",
+  ]);
+  assert.doesNotMatch(html, /PROJECT ARCHIVE|CATEGORY NOT FOUND|PROJECTS|aria-selected="true"/);
+  assert.match(html, /class="contact-copyright">© [\s\S]*?STUDIO ALMOST<span>ALL RIGHTS RESERVED\.<\/span>/);
 });
 
 for (const [slug, label] of [
